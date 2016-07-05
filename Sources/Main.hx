@@ -2,13 +2,9 @@ package;
 
 import kala.asset.Assets;
 import kala.debug.Debug;
-import kala.input.Keyboard;
-import kala.input.Mouse;
 import kala.Kala;
 import kala.objects.group.View;
 import kala.objects.text.BasicText;
-import kha.System;
-import kha.SystemImpl;
 import states.Preloader;
 
 class Main {

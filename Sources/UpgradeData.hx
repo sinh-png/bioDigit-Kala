@@ -20,6 +20,7 @@ class UpgradeData {
 	
 	public static var money:Int = 0;
 	
+	//WIP
 	public static function upgrade(itemID:Int):Void {
 	
 		switch(itemID) {

@@ -6,6 +6,9 @@ import kala.objects.sprite.Sprite.SpriteData;
 import kha.Assets.FontList;
 import kha.Assets.ImageList;
 
+/**
+ * Used to store sprite data & assets. 
+ */
 class R {
 
 	public static var sheets:SheetList;
