@@ -3,7 +3,7 @@
 
 ###NOTES
 
-- The game framerate is capped at 30fps when 'cap_30' is defined and building in release mode, this is to make sure the game can run stably targeting HTML5 on low-end mobile devices. Currently Kha is not yet implemented a way for us to limit rendering framerate so you will have to directly change Kha source codes for that. Without limiting the rendering rate, it's best to just let the framerate maxed at 60fps, doing this by removing `project.addDefine('cap_30');` in `khafile.js`.
+- The game framerate is capped at 30fps when 'cap_30' is defined and building in release mode, this is to make sure the game can run stably targeting HTML5 on low-end mobile devices. Currently Kha is not yet implemented a way for us to limit rendering framerate so you will have to directly change Kha source codes for that. Without limiting the rendering rate, it's best to not cap the updating rate, doing this by removing `project.addDefine('cap_30');` in `khafile.js`.
 
 - Art assets were packed with [TexturePacker](https://www.codeandweb.com/texturepacker) free version.
 
