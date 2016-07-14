@@ -63,8 +63,8 @@ class Preloader extends GenericGroup {
 		UpgradeState.instance = new UpgradeState();
 		PlayState.instance = new PlayState();
 		
-		//G.switchState(UpgradeState.instance);
-		G.switchState(PlayState.instance);
+		G.switchState(UpgradeState.instance);
+		//G.switchState(PlayState.instance);
 		//G.switchState(MainMenuState.instance);
 		//G.switchState(new SpringRollSplash());
 		

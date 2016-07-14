@@ -69,7 +69,7 @@ class EnemyA extends Enemy {
 			originY = (sprite.height - 90) * baseScale;
 			hspeed = 0;
 		} else {
-			dropGems(20, 0, (-position.oy + halfHeight) * baseScale);
+			dropGems(5, 0, (-position.oy + halfHeight) * baseScale);
 			super.kill();
 		}
 		

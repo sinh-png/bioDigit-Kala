@@ -12,11 +12,9 @@ class Player extends Sprite {
 	#if (cap_30 && !debug)
 	static inline var runningSpeed = 12;
 	static inline var chargingSpeed = 0.04;
-	static inline var shootAlarmFrames = 10;
 	#else
 	static inline var runningSpeed = 6;
 	static inline var chargingSpeed = 0.02;
-	static inline var shootAlarmFrames = 20;
 	#end
 	
 	public static var instance:Player;
@@ -27,7 +25,8 @@ class Player extends Sprite {
 	public var chargingProcessText:BasicText;
 	
 	var chargedValue:FastFloat;
-	var shootAlarm:Int = shootAlarmFrames;
+	var shootAlarm:Int;
+	var minionSpawnAlarm:Int;
 	
 	public function new() {
 		super();
@@ -52,8 +51,6 @@ class Player extends Sprite {
 	override public function update(elapsed:FastFloat):Void {
 		super.update(elapsed);
 
-		if (kala.input.Keyboard.SPACE.justPressed) Minion.create();
-	
 		var charging:Bool = false;
 		var moving:Int = 0; // -1 - moving left, 1 - moving right, 0 - not moving
 		
@@ -114,8 +111,27 @@ class Player extends Sprite {
 		} else {
 			if (shootAlarm > 0) shootAlarm--;
 			else {
-				shootAlarm = shootAlarmFrames;
-				//for(i in 0...7) Bullet.shoot1(x, (i - 3), 20 - Math.abs(i - 3) * 1.6);
+				shootAlarm = UpgradeData.shootDelay;
+				var middleIndex = Math.floor(UpgradeData.bulletsPerShot / 2);
+				if (UpgradeData.bulletsPerShot % 2 == 0) {
+					for (i in 0...UpgradeData.bulletsPerShot + 1) {
+						if (i == UpgradeData.middleBulletIndex) continue;
+						Bullet.shoot1(
+							x,
+							i - UpgradeData.middleBulletIndex,
+							10 + UpgradeData.bulletsPerShot - Math.abs(i - UpgradeData.middleBulletIndex) * 1.6
+						);
+					}
+				} else {
+					for (i in 0...UpgradeData.bulletsPerShot) {
+						Bullet.shoot1(
+							x,
+							i - UpgradeData.middleBulletIndex,
+							10 + UpgradeData.bulletsPerShot - Math.abs(i - UpgradeData.middleBulletIndex) * 1.6
+						);
+					}
+				}
+				
 			}
 			
 			chargingProcessText.visible = false;
@@ -139,10 +155,17 @@ class Player extends Sprite {
 				animation.play("stand");
 			}
 		}
+		
+		if (minionSpawnAlarm > 0) minionSpawnAlarm--;
+		else {
+			minionSpawnAlarm = UpgradeData.minionSpawnDelay;
+			Minion.create();
+		}
 	}
 	
 	public function restart():Void {
 		chargedValue = 0;
+		shootAlarm = UpgradeData.shootDelay;
 	}
 	
 }

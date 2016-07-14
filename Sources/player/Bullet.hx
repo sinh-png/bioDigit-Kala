@@ -10,11 +10,13 @@ import states.PlayState;
 class Bullet extends Sprite {
 	
 	#if (cap_30 && !debug)
-	static inline var haccelUpdateFactor = 0.25;
+	static inline var haccelUpdateFactor = 0.35;
 	static inline var vaccel = -1.2;
+	static inline var scaleSpeed = 0.2;
 	#else
-	static inline var haccelUpdateFactor = 0.5;
+	static inline var haccelUpdateFactor = 0.7;
 	static inline var vaccel = -0.3;
+	static inline var scaleSpeed = 0.1;
 	#end
 	
 	//
@@ -29,7 +31,7 @@ class Bullet extends Sprite {
 	
 	public static inline function shoot1(x:FastFloat, haccel:FastFloat, vspeed:FastFloat):Void {
 		var bullet = create(mainGroup, x);
-		bullet.y = 330;
+		bullet.y = 360;
 		bullet.scale.setXY(2, 2);
 		bullet.hspeed = 0;
 		#if (cap_30 && !debug)
@@ -88,7 +90,7 @@ class Bullet extends Sprite {
 			}
 		}
 		
-		if (scale.x > 1) scale.y = scale.x -= 0.05;
+		if (scale.x > 1) scale.y = scale.x -= scaleSpeed;
 
 		x += hspeed;
 		y += vspeed;

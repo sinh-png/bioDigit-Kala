@@ -32,7 +32,7 @@ class EnemyD extends Enemy {
 		var enemy = pool.get();
 		enemy.revive();
 		enemy.setXY(x, y);
-		enemy.hp = 200;
+		enemy.hp = 300;
 		enemy.moveRandom(function() {
 			for (i in 0...6) {
 				enemy.createChild();
@@ -72,6 +72,11 @@ class EnemyD extends Enemy {
 		initDeathEffect();
 	}
 	
+	override public function kill():Void {
+		super.kill();
+		dropGems(9, 0, 0);
+	}
+	
 	override function updateAlive(elapsed:FastFloat):Void {
 		hpText.y = sprite.y;
 		mask.position.y = sprite.y + 2;
@@ -86,7 +91,7 @@ class EnemyD extends Enemy {
 		);
 		child.leftTurning = Random.bool();
 		child.turningDelay = Random.int(Child.turnDelayMin, Child.turnDelayMax);
-		child.hp = 8;
+		child.hp = 9;
 	}
 	
 }
@@ -136,6 +141,11 @@ class Child extends Enemy {
 		playerPos = Player.instance.position;
 		
 		initDeathEffect();
+	}
+	
+	override public function kill():Void {
+		super.kill();
+		dropGems(1, 0, 0);
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {

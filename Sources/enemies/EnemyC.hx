@@ -84,7 +84,7 @@ class EnemyC extends Enemy {
 	
 	override public function kill():Void {
 		super.kill();
-		dropGems(Std.int(size * 4), 0, 0);
+		dropGems(Std.int(size * 3), 0, 0);
 	}
 	
 	override function put():Void {
@@ -226,9 +226,9 @@ class EnemyC extends Enemy {
 		endAttacking();
 		
 		set_hp(switch(value) {
-			case 1: 75;
-			case 2: 150;
-			case 3: 300;
+			case 1: 50;
+			case 2: 100;
+			case 3: 150;
 			default: 0;
 		});
 		

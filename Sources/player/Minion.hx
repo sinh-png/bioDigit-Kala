@@ -61,24 +61,20 @@ class Minion extends Sprite {
 	override public function update(elapsed:FastFloat):Void {
 		if (shootAlarm > 0) shootAlarm--;
 		else {
+			shootAlarm = UpgradeData.minionShootDelay;
 			Bullet.shoot2(x);
-			#if (cap_30 && !debug)
-			shootAlarm = 5;
-			#else
-			shootAlarm = 10;
-			#end
 		}
 		
 		if (Math.abs(dx - playerPos.x) > 150) move();
 		else {
 			if (moveAlarm > 0) moveAlarm--;
 			else {
-				move();
 				#if (cap_30 && !debug)
 				moveAlarm = Random.int(100, 200);
 				#else
 				moveAlarm = Random.int(200, 400);
 				#end
+				move();
 			}
 		}
 		

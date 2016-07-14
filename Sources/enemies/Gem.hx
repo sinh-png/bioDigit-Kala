@@ -61,6 +61,7 @@ class Gem extends Sprite {
 			var distance = position.getDistance(playerPos);
 			if (distance < 40) {
 				kill();
+				UpgradeData.money++;
 			} else if (distance < UpgradeData.gemCollectionDistance) {
 				var a = position.getAngle(playerPos, false);
 				angle = Mathf.deg(a);

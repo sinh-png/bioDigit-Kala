@@ -103,13 +103,13 @@ class EnemyB extends Enemy {
 	
 	override public function kill():Void {
 		super.kill();
-		dropGems(10, 0, 0);
+		dropGems(scale.x == 1 ? 5 : 1, 0, 0);
 	}
 	
 	inline function createChild(angle:FastFloat):Void {
 		var child = childGroup.createAlive();
 		child.setXY(x, y);
-		child.hp = 100;
+		child.hp = 20;
 		child.motion.velocity.setAngleSpeed(angle, 5);
 		child.motion.turnSpeed = 0;
 	}

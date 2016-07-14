@@ -1,5 +1,6 @@
 package player;
 
+import enemies.Enemy;
 import enemies.EnemyB;
 import enemies.EnemyD;
 import kala.behaviors.collision.basic.shapes.CollisionCircle;
@@ -23,14 +24,14 @@ class Lightning extends Sprite {
 		
 		#if (cap_30 && !debug)
 		lightning.tween.get()
-			.tween(lightning.scale, { x: 1 * Random.roll() }, 15, Ease.elasticOut)
+			.tween(lightning.scale, { x: 1 * Random.roll() }, 20, Ease.elasticOut)
 			.wait(10)
 			.tween(lightning.scale, { x: 0 }, 30, Ease.elasticInOut)
 			.call(function(_) lightning.kill())
 		.start();
 		#else
 		lightning.tween.get()
-			.tween(lightning.scale, { x: 1 * Random.roll() }, 30, Ease.elasticOut)
+			.tween(lightning.scale, { x: 1 * Random.roll() }, 40, Ease.elasticOut)
 			.wait(20)
 			.tween(lightning.scale, { x: 0 }, 30, Ease.elasticInOut)
 			.call(function(_) lightning.kill())
@@ -64,48 +65,31 @@ class Lightning extends Sprite {
 		var leftX = x - scaledHalfHitWidth;
 		var rightX = x + scaledHalfHitWidth;
 		
-		var eneMask:CollisionCircle;
-
 		for (enemy in PlayState.instance.enemyGroup) {
 			if (!enemy.alive || !enemy.collider.available) continue;
-			
-			eneMask = enemy.mask;
-			
-			if (
-				eneMask.absX + eneMask.radius > leftX &&
-				eneMask.absX - eneMask.radius < rightX
-			) {
-				enemy.hp -= 1 * absScaleX;
-			}
+			testHit(enemy, absScaleX, leftX, rightX);
 		}
 		
 		for (enemy in EnemyB.childGroup) {
 			if (!enemy.alive || !enemy.collider.available) continue;
-			
-			eneMask = enemy.mask;
-			
-			if (
-				eneMask.absX + eneMask.radius > leftX &&
-				eneMask.absX - eneMask.radius < rightX
-			) {
-				enemy.hp -= 1 * absScaleX;
-			}
+			testHit(enemy, absScaleX, leftX, rightX);
 		}
 		
 		for (enemy in EnemyD.childGroup) {
 			if (!enemy.sprite.alive || !enemy.collider.available) continue;
-			
-			eneMask = enemy.mask;
-			
-			if (
-				eneMask.absX + eneMask.radius > leftX &&
-				eneMask.absX - eneMask.radius < rightX
-			) {
-				enemy.hp -= 1 * absScaleX;
-			}
+			testHit(enemy, absScaleX, leftX, rightX);
 		}
 		
 		if (PlayState.instance.boss.alive) PlayState.instance.boss.hp -= 1 * absScaleX;
+	}
+	
+	inline function testHit(enemy:Enemy, absScaleX:FastFloat, leftX:FastFloat, rightX:FastFloat):Void {
+		if (
+			enemy.mask.absX + enemy.mask.radius > leftX &&
+			enemy.mask.absX - enemy.mask.radius < rightX
+		) {
+			enemy.hp -= UpgradeData.lightningDMG * absScaleX;
+		}
 	}
 	
 }

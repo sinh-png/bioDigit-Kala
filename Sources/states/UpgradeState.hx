@@ -6,6 +6,8 @@ import kala.objects.group.Group.GenericGroup;
 import kala.objects.sprite.PushSprite;
 import kala.objects.sprite.Sprite;
 import kala.objects.text.BasicText;
+import kala.objects.text.Text;
+import kala.objects.text.TextAlign;
 import kha.FastFloat;
 import ui.Button;
 
@@ -15,18 +17,21 @@ class UpgradeState extends GenericGroup {
 	
 	//
 	
-	public var currentItem:Int;
+	public var currentItem(default, set):Int;
 	public var itemButtons:Array<ItemButton> = new Array<ItemButton>();
+	public var upgradeButton:Button;
 	
 	var background:Sprite;
 	
 	var upgradeGroup:GenericGroup;
 	var startButton:Button;
 	var backButton:Button;
-	var upgradeButton:Button;
-	var descriptionBG:Sprite;
 	var gemIcon:Sprite;
 	var moneyText:BasicText;
+	var descriptionBG:Sprite;
+	var descriptionText:Text;
+	var costText:BasicText;
+	var levelText:BasicText;
 	
 	var tween:Tween;
 	
@@ -73,6 +78,8 @@ class UpgradeState extends GenericGroup {
 				itemY += 142 + space;
 				itemX = 10;
 			}
+			
+			itemButtons[i].data = i;
 		}
 		
 		descriptionBG = new Sprite().loadSpriteData(R.upgradeDescBG);
@@ -82,6 +89,7 @@ class UpgradeState extends GenericGroup {
 		);
 		upgradeGroup.add(descriptionBG);
 		
+		
 		upgradeButton = new Button("upgradeButton", R.upgradeButton);
 		var padding = (descriptionBG.height - upgradeButton.height) / 2;
 		upgradeButton.setXY(descriptionBG.x + padding, descriptionBG.y + padding);
@@ -89,6 +97,25 @@ class UpgradeState extends GenericGroup {
 		upgradeButton.onOut.notify(onButtonOutHandle);
 		upgradeButton.onRelease.notify(onButtonReleaseHandle);
 		upgradeGroup.add(upgradeButton);
+		
+		
+		costText = new BasicText();
+		costText.text = "Cost: 1000";
+		costText.x = upgradeButton.x + upgradeButton.width + 20;
+		costText.y = descriptionBG.y + 5;
+		upgradeGroup.add(costText);
+		
+		levelText = new BasicText();
+		levelText.y = costText.y;
+		levelText.onTextChange.notify(function(_, _) {
+			levelText.x = descriptionBG.x + descriptionBG.width - levelText.width - 20; 
+		});
+		levelText.text = "Level: 5/10";
+		upgradeGroup.add(levelText);
+		
+		descriptionText = new Text("TO GET HEIGHT", TextAlign.CENTER);
+		
+		updateItems();
 		
 		tween = new Tween(this);
 		
@@ -109,49 +136,84 @@ class UpgradeState extends GenericGroup {
 	}
 	
 	function onButtonOutHandle(button:PushSprite):Void {
-		if (button.data == "upgradeButton") button.opacity = 0.6;
+		if (button.data == "upgradeButton") button.opacity = 0.75;
 		else button.scale.setXY(1, 1);
 	}
 	
 	function onButtonReleaseHandle(button:PushSprite, _):Void {
 		switch(button.data) {
-			case "upgradeButton": upgradeItem(0);
+			case "upgradeButton": upgradeItem();
 			case "startButton": startGame();
 			case "backButton": backToMainMenu();
 		}
 	}
 	
-	function upgradeItem(id:Int):Void {
+	function upgradeItem():Void {
+		UpgradeData.upgrade(currentItem);
+		currentItem = currentItem; // Update cost & level texts.
+		updateItems();
+	}
+	
+	
+	function updateItems():Void {
+		for (i in 0...10) {
+			var btn = itemButtons[i];
+			if (UpgradeData.isUpgradable(i)) {
+				btn.upgradable = true;
+			} else {
+				btn.upgradable = false;
+				btn.opacity = btn.selected ? 0.75 : 0.5;
+			}
+		}
 		
+		upgradeButton.active = UpgradeData.isUpgradable(currentItem);
+		upgradeButton.opacity = upgradeButton.active ? 1 : 0.75;
 	}
 	
 	function startGame():Void {
+		UpgradeData.update();
+		
 		upgradeGroup.active = false;
 		tween.get()
-			.tween(upgradeGroup, { x: G.width }, 80, Ease.backIn)
+			.tween(upgradeGroup, { x: -G.width }, 80, Ease.backIn)
 			.call(function(_) G.switchState(PlayState.instance))
 		.start();
 	}
 	
 	function backToMainMenu():Void {
+		UpgradeData.update();
+		
 		upgradeGroup.active = false;
 		tween.get()
-			.tween(upgradeGroup, { x: -G.width }, 80, Ease.backIn)
+			.tween(upgradeGroup, { x: G.width }, 80, Ease.backIn)
 			.call(function(_) G.switchState(MainMenuState.instance))
 		.start();
+	}
+	
+	function set_currentItem(value:Int):Int {
+		if (UpgradeData.itemLevel[value] < UpgradeData.itemMaxLevel[value]) {
+			costText.text = "Cost: " + UpgradeData.getCost(value);
+			levelText.text = "Level: " + UpgradeData.itemLevel[value] + "/" + UpgradeData.itemMaxLevel[value];
+		} else {
+			costText.text = "";
+			levelText.text = "Level: MAX";
+		}
+		
+		return currentItem = value;
 	}
 	
 }
 
 class ItemButton extends Button {
 	
-	public var selected:Bool = false;
+	public var selected(default, set):Bool = false;
+	public var upgradable:Bool = false;
 	
 	public function new(id:Int) {
 		super(id, Reflect.getProperty(R, "upgradeItem" + id));
 		
 		scale.set(0.8, 0.8, width / 2, height / 2);
-		opacity = 0.5;
+		opacity = 0.75;
 		
 		onOver.notify(onHoverHandle);
 		onOut.notify(onOutHandle);
@@ -169,17 +231,24 @@ class ItemButton extends Button {
 	}
 	
 	function onHoverHandle(_):Void {
-		opacity = 0.7;
+		if (!selected) opacity = upgradable ? 1 : 0.75;
 	}
 	
 	function onOutHandle(_):Void {
-		opacity = 0.5;
+		if (!selected) opacity = upgradable ? 0.75 : 0.5;
 	}
 	
 	function onReleaseHandle(_, _):Void {
 		UpgradeState.instance.currentItem = data;
+		UpgradeState.instance.upgradeButton.active = upgradable;
 		for (item in UpgradeState.instance.itemButtons) item.selected = false;
 		selected = true;
+	}
+	
+	function set_selected(value:Bool):Bool {
+		if (value) opacity = upgradable ? 1 : 0.75;
+		else opacity = upgradable ? 0.75 : 0.5;
+		return selected = value;
 	}
 	
 }

@@ -135,7 +135,7 @@ class Enemy extends GenericGroup {
 	}
 	
 	inline function dropGems(quantity:Int, offsetX:FastFloat = 0, offsetY:FastFloat = 0):Void {
-		for (i in 0...quantity) Gem.create(x + offsetX, y + offsetY);
+		for (i in 0...Math.round(quantity * UpgradeData.gemDropFactor)) Gem.create(x + offsetX, y + offsetY);
 	}
 	
 	function set_hp(value:FastFloat):FastFloat {

@@ -13,7 +13,7 @@ class Main {
 		
 		Kala.world.onFirstFrame.notify(function(_) {
 			Kala.defaultFont = Assets.fonts.font_1;
-			Debug.collisionDebug = true;
+			//Debug.collisionDebug = true;
 			
 			Kala.defaultView = new View(0, 0, G.width, G.height, 16);
 			Kala.defaultView.setCenterScaleMode(RATIO);

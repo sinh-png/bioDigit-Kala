@@ -39,7 +39,7 @@ class Web extends Sprite {
 				web.mask.active = true;
 			})
 			.tween(web.scale, { x: Random.roll(), y: 1 }, 15, Ease.elasticOut)
-			.wait(UpgradeData.webTime)
+			.wait(UpgradeData.webDuration)
 			.tween(web, { opacity: 0 }, 60, Ease.sineInOut)
 			.call(function(_) web.kill())
 		.start();
@@ -54,7 +54,7 @@ class Web extends Sprite {
 				web.mask.active = true;
 			})
 			.tween(web.scale, { x: Random.roll(), y: 1 }, 30, Ease.elasticOut)
-			.wait(UpgradeData.webTime * 2)
+			.wait(UpgradeData.webDuration)
 			.tween(web, { opacity: 0 }, 120, Ease.sineInOut)
 			.call(function(_) web.kill())
 		.start();

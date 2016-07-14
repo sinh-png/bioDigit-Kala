@@ -106,12 +106,11 @@ class PlayState extends GenericGroup {
 		Kala.updateRate = 60;
 		#end
 		
-		boss.revive();
-		/*EnemyA.create(3, 0, 250);
-		EnemyC.create(3, 200, 50);
-		EnemyC.create(2, 500, 150);
-		EnemyB.create(600, 180);
-		EnemyD.create(400, 160);*/
+		//boss.revive();
+		//EnemyA.create(3, 0, 250);
+		//EnemyC.create(3, 200, 50);
+		//EnemyB.create(600, 180);
+		EnemyD.create(400, 160);
 		
 		player.restart();
 		
