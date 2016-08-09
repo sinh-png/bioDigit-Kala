@@ -11,10 +11,10 @@ class Player extends Sprite {
 
 	#if (cap_30 && !debug)
 	static inline var runningSpeed = 12;
-	static inline var chargingSpeed = 0.04;
+	static inline var chargingSpeed = 0.02;
 	#else
 	static inline var runningSpeed = 6;
-	static inline var chargingSpeed = 0.02;
+	static inline var chargingSpeed = 0.01;
 	#end
 	
 	public static var instance:Player;
@@ -96,13 +96,17 @@ class Player extends Sprite {
 				
 				chargingProcessText.visible = true;
 				
-				if (chargedValue > 0.5) {
-					chargingProcessText.text = "LIGHTNING";
+				if (chargedValue > 0.4) {
+					chargingProcessText.text = "LIGHTNING" + " - " + Math.floor((chargedValue - 0.4) / 0.6 * 100) + "%";
 				} else {
-					chargingProcessText.text = "WEB";
+					chargingProcessText.text = "WEB" + " - " + Math.floor(chargedValue / 0.4 * 100) + "%";
 				}
 				
 				chargingProcessText.x = x - chargingProcessText.width / 2;
+				if (chargingProcessText.x < 0) chargingProcessText.x = 0;
+				else if (chargingProcessText.x > G.width - chargingProcessText.width) {
+					chargingProcessText.x = G.width - chargingProcessText.width;
+				}
 			} else {
 				animation.play("stand");
 			}

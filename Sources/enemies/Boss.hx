@@ -114,6 +114,8 @@ class Boss extends Enemy {
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {
+		super.updateAlive(elapsed);
+		
 		mask.position.y = -235 + 100 * scale.y;
 		leftThrone.rotation.angle++;
 		rightThrone.rotation.angle--;

@@ -61,12 +61,13 @@ class Bullet extends Sprite {
 	
 	//
 	
+	public var vspeed:FastFloat;
 	var hspeed:FastFloat;
 	var haccel:FastFloat;
-	var vspeed:FastFloat;
 	
+	public var mask:CollisionRectangle;
 	var collider:Collider;
-	var mask:CollisionRectangle;
+	
 	
 	public function new() {
 		super();
@@ -79,17 +80,6 @@ class Bullet extends Sprite {
 	}
 	
 	override public function update(elapsed:FastFloat):Void {
-		if (vspeed < 0) {
-			for (enemy in PlayState.instance.enemyGroup) {
-				if (!enemy.alive || !enemy.collider.available) continue;
-				if (mask.testCircle(enemy.mask)) {
-					enemy.hp--;
-					kill();
-					return;
-				}
-			}
-		}
-		
 		if (scale.x > 1) scale.y = scale.x -= scaleSpeed;
 
 		x += hspeed;

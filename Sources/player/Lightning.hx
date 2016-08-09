@@ -14,24 +14,24 @@ import states.PlayState;
 
 class Lightning extends Sprite {
 
-	public static var myGroup:Group<Lightning> = new Group<Lightning>(false, function() return new Lightning());
+	public static var mainGroup:Group<Lightning> = new Group<Lightning>(false, function() return new Lightning());
 	
-	public static inline function shoot(x:FastFloat):Void {
-		var lightning = myGroup.createAlive();
+	public static inline function shoot(x:FastFloat, power:FastFloat = 0):Void {
+		var lightning = mainGroup.createAlive();
 		
 		lightning.x = x;
 		lightning.scale.x = 0;
 		
 		#if (cap_30 && !debug)
 		lightning.tween.get()
-			.tween(lightning.scale, { x: 1 * Random.roll() }, 20, Ease.elasticOut)
+			.tween(lightning.scale, { x: Random.roll() * (0.4 + power * 0.6) }, 20, Ease.elasticOut)
 			.wait(10)
 			.tween(lightning.scale, { x: 0 }, 30, Ease.elasticInOut)
 			.call(function(_) lightning.kill())
 		.start();
 		#else
 		lightning.tween.get()
-			.tween(lightning.scale, { x: 1 * Random.roll() }, 40, Ease.elasticOut)
+			.tween(lightning.scale, { x: Random.roll() * (0.4 + power * 0.6) }, 40, Ease.elasticOut)
 			.wait(20)
 			.tween(lightning.scale, { x: 0 }, 30, Ease.elasticInOut)
 			.call(function(_) lightning.kill())

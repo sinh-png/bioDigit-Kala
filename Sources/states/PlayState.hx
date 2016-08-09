@@ -1,7 +1,7 @@
 package states;
 
 import enemies.*;
-import kala.behaviors.graphics.Clip;
+import kala.behaviors.display.Clip;
 import kala.behaviors.tween.Ease;
 import kala.behaviors.tween.Tween;
 import kala.Kala;
@@ -77,15 +77,15 @@ class PlayState extends GenericGroup {
 		add(Boss.lightningGroup);
 		
 		add(Bullet.mainGroup);
-		add(Lightning.myGroup);
+		add(Lightning.mainGroup);
 		
 		foreground = new Sprite().loadSpriteData(R.sheets.sprite_sheet_1.get("background/foreground.png"), R.images.sprite_sheet_1);
 		foreground.y = G.height - foreground.height;
 		add(foreground);
 		
-		chargingProcessText = player.chargingProcessText = new BasicText(R.fonts.font_1, 30);
+		chargingProcessText = player.chargingProcessText = new BasicText(30);
 		chargingProcessText.y = 460;
-		//add(chargingProcessText);
+		add(chargingProcessText);
 		
 		blurOverlay = new Sprite(R.images.background_blur);
 		add(blurOverlay);

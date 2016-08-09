@@ -12,8 +12,8 @@ class Main {
 	public static function main() {
 		
 		Kala.world.onFirstFrame.notify(function(_) {
-			Kala.defaultFont = Assets.fonts.font_1;
-			//Debug.collisionDebug = true;
+			Kala.defaultFont = Assets.fonts.font;
+			Debug.collisionDebug = true;
 			
 			Kala.defaultView = new View(0, 0, G.width, G.height, 16);
 			Kala.defaultView.setCenterScaleMode(RATIO);
@@ -22,7 +22,7 @@ class Main {
 			G.state = new Preloader();
 			Kala.world.add(G.state);
 			
-			var text = new BasicText(Assets.fonts.font_1);
+			var text = new BasicText();
 			Kala.world.add(text);
 			
 			Kala.world.onPostUpdate.notify(function(_, _) {

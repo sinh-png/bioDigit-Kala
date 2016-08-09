@@ -19,7 +19,7 @@ class Preloader extends GenericGroup {
 		
 		loader = Assets.loader;
 		loader
-			.queueFont(Assets.fonts.font_1Name)
+			.queueFont(Assets.fonts.fontName)
 			.queueImage(Assets.images.background_blurName)
 			.queueAll()
 		.load(process);

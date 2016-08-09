@@ -20,7 +20,7 @@ class UpgradeData {
 	public static var gemCollectionDistance:Int;
 	
 	public static var itemLevel:Array<Int> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-	public static var itemMaxLevel:Array<Int> = [99, 10, 10, 10, 10, 10, 4, 10, 10, 3];
+	public static var itemMaxLevel:Array<Int> = [99, 10, 10, 10, 10, 10, 3, 10, 10, 3];
 		
 	public static function getCost(id:Int):Int {
 		return Math.round((itemLevel[id] + 1) * ((itemLevel[id] + 1) / 2) * 50);
@@ -50,10 +50,10 @@ class UpgradeData {
 		
 		gemDropFactor = 1 + itemLevel[4] / 5;
 		
-		minionSpawnDelay = 350 - itemLevel[5] * 20;
+		minionSpawnDelay = 400 - itemLevel[5] * 20;
 		minionStartingLives = 1 + itemLevel[6];
-		minionShootDelay = 25 - itemLevel[7];
-		minionLightningChance = itemLevel[8] * 5;
+		minionShootDelay = 20 - itemLevel[7];
+		minionLightningChance = itemLevel[8] * 2;
 		
 		gemCollectionDistance = 100 + itemLevel[9] * 100;
 		

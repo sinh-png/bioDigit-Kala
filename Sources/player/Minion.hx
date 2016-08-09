@@ -13,6 +13,12 @@ import states.PlayState;
 
 class Minion extends Sprite {
 	
+	#if (cap_30 && !debug)
+	static inline var lightningDelay = 120;
+	#else
+	static inline var lightningDelay = 240;
+	#end
+	
 	public static var myGroup:Group<Minion> = new Group<Minion>(false, function() return new Minion());
 	
 	public static inline function create():Void {
@@ -26,6 +32,7 @@ class Minion extends Sprite {
 	var playerPos:Position;
 	
 	var shootAlarm:Int;
+	var lightningAlarm:Int;
 	
 	var collider:Collider;
 	var mask:CollisionCircle;
@@ -55,7 +62,8 @@ class Minion extends Sprite {
 		super.revive();
 		setXY(playerPos.x, playerPos.y);
 		moveAlarm = 0;
-		shootAlarm = 4;
+		shootAlarm = UpgradeData.shootDelay;
+		lightningAlarm = lightningDelay;
 	}
 	
 	override public function update(elapsed:FastFloat):Void {
@@ -63,6 +71,13 @@ class Minion extends Sprite {
 		else {
 			shootAlarm = UpgradeData.minionShootDelay;
 			Bullet.shoot2(x);
+		}
+		
+		if (lightningAlarm > 0) lightningAlarm--;
+		else {
+			lightningAlarm = lightningDelay;
+			if (Random.bool(UpgradeData.minionLightningChance)) Lightning.shoot(x);
+			
 		}
 		
 		if (Math.abs(dx - playerPos.x) > 150) move();

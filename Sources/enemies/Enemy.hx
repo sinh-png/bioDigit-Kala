@@ -10,6 +10,7 @@ import kala.objects.group.Group;
 import kala.objects.sprite.Sprite;
 import kala.objects.text.BasicText;
 import kha.FastFloat;
+import player.Bullet;
 
 class Enemy extends GenericGroup {
 
@@ -41,7 +42,7 @@ class Enemy extends GenericGroup {
 		sprite = new Sprite();
 		add(sprite);
 		
-		hpText = new BasicText(R.fonts.font_1, 90);
+		hpText = new BasicText(90);
 		add(hpText);
 		
 		deathEffect = new Sprite();
@@ -117,7 +118,23 @@ class Enemy extends GenericGroup {
 	}
 	
 	function updateAlive(elapsed:FastFloat):Void {
+		for (bullet in Bullet.mainGroup) {
+			if (bullet.vspeed < 0) {
+				if (collider.available && mask.testRect(bullet.mask)) {
+					hp--;
+					bullet.kill();
+				}
+			}	
+		}
 		
+		for (bullet in Bullet.minionGroup) {
+			if (bullet.vspeed < 0) {
+				if (collider.available && mask.testRect(bullet.mask)) {
+					hp--;
+					bullet.kill();
+				}
+			}	
+		}
 	}
 
 	function spawnRandomPos():Void {

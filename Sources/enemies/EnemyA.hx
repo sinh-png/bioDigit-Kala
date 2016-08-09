@@ -80,6 +80,8 @@ class EnemyA extends Enemy {
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {
+		super.updateAlive(elapsed);
+		
 		if (splitting) {
 			#if (cap_30 && !debug)
 			if (scale.oy > originY) position.oy = scale.oy -= 4;

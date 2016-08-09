@@ -47,6 +47,17 @@ class UpgradeState extends GenericGroup {
 		upgradeGroup.x = G.width;
 		add(upgradeGroup);
 		
+		gemIcon = new Sprite().loadSpriteData(R.sheets.sprite_sheet_2.get("crystal_icon.png"), R.images.sprite_sheet_2);
+		gemIcon.x = 50;
+		gemIcon.y = -5;
+		upgradeGroup.add(gemIcon);
+		
+		moneyText = new BasicText(30);
+		moneyText.text = "x " + UpgradeData.money;
+		moneyText.x = gemIcon.x + gemIcon.width - 10;
+		moneyText.y = gemIcon.y + (gemIcon.height - moneyText.height) / 2;
+		upgradeGroup.add(moneyText);
+		
 		startButton = new Button("startButton", R.upgradeStartButton);
 		startButton.x = 550;
 		startButton.onOver.notify(onButtonHoverHandle);
@@ -89,7 +100,6 @@ class UpgradeState extends GenericGroup {
 		);
 		upgradeGroup.add(descriptionBG);
 		
-		
 		upgradeButton = new Button("upgradeButton", R.upgradeButton);
 		var padding = (descriptionBG.height - upgradeButton.height) / 2;
 		upgradeButton.setXY(descriptionBG.x + padding, descriptionBG.y + padding);
@@ -97,7 +107,6 @@ class UpgradeState extends GenericGroup {
 		upgradeButton.onOut.notify(onButtonOutHandle);
 		upgradeButton.onRelease.notify(onButtonReleaseHandle);
 		upgradeGroup.add(upgradeButton);
-		
 		
 		costText = new BasicText();
 		costText.text = "Cost: 1000";
@@ -113,9 +122,11 @@ class UpgradeState extends GenericGroup {
 		levelText.text = "Level: 5/10";
 		upgradeGroup.add(levelText);
 		
-		descriptionText = new Text("TO GET HEIGHT", TextAlign.CENTER);
-		
-		updateItems();
+		var xx = upgradeButton.x + upgradeButton.width;
+		descriptionText = new Text(30, cast descriptionBG.x + descriptionBG.width - xx, TextAlign.CENTER);
+		descriptionText.padding.x = 20;
+		descriptionText.setXY(xx, costText.y + 40);
+		upgradeGroup.add(descriptionText);
 		
 		tween = new Tween(this);
 		
@@ -123,6 +134,11 @@ class UpgradeState extends GenericGroup {
 	}
 	
 	function onStartHandle(_):Void {
+		currentItem = 0;
+		updateItems();
+		itemButtons[0].scale.setXY(1, 1);
+		itemButtons[0].onReleaseHandle(null, 0);
+		
 		upgradeGroup.active = false;
 		tween.get()
 			.tween(upgradeGroup, { x: 0 }, 80, Ease.bounceOut)
@@ -152,8 +168,8 @@ class UpgradeState extends GenericGroup {
 		UpgradeData.upgrade(currentItem);
 		currentItem = currentItem; // Update cost & level texts.
 		updateItems();
+		moneyText.text = "x " + UpgradeData.money;
 	}
-	
 	
 	function updateItems():Void {
 		for (i in 0...10) {
@@ -198,6 +214,19 @@ class UpgradeState extends GenericGroup {
 			costText.text = "";
 			levelText.text = "Level: MAX";
 		}
+
+		switch(value) {
+			case 0: descriptionText.text = "Increases your lives.";
+			case 1: descriptionText.text = "Increases your fire rate and bullets per shot.";
+			case 2: descriptionText.text = "Increases the duration of your webs.";
+			case 3: descriptionText.text = "Increases the power of your and your children lightning.";
+			case 4: descriptionText.text = "Gives you more gems when an enemy is destroyed.";
+			case 5: descriptionText.text = "Increases the spawn rate of your children.";
+			case 6: descriptionText.text = "Increases the lives of your children.";
+			case 7: descriptionText.text = "Increases the fire rate of your children.";
+			case 8: descriptionText.text = "Increases the lightning casting chance of your children.";
+			case 9: descriptionText.text = "Increases your radius of collecting gems.";
+		}
 		
 		return currentItem = value;
 	}
@@ -230,19 +259,19 @@ class ItemButton extends Button {
 		}
 	}
 	
+	public function onReleaseHandle(_, _):Void {
+		UpgradeState.instance.currentItem = data;
+		UpgradeState.instance.upgradeButton.active = upgradable;
+		for (item in UpgradeState.instance.itemButtons) item.selected = false;
+		selected = true;
+	}
+	
 	function onHoverHandle(_):Void {
 		if (!selected) opacity = upgradable ? 1 : 0.75;
 	}
 	
 	function onOutHandle(_):Void {
 		if (!selected) opacity = upgradable ? 0.75 : 0.5;
-	}
-	
-	function onReleaseHandle(_, _):Void {
-		UpgradeState.instance.currentItem = data;
-		UpgradeState.instance.upgradeButton.active = upgradable;
-		for (item in UpgradeState.instance.itemButtons) item.selected = false;
-		selected = true;
 	}
 	
 	function set_selected(value:Bool):Bool {

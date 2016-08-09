@@ -78,6 +78,8 @@ class EnemyD extends Enemy {
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {
+		super.updateAlive(elapsed);
+		
 		hpText.y = sprite.y;
 		mask.position.y = sprite.y + 2;
 	}
@@ -149,6 +151,8 @@ class Child extends Enemy {
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {
+		super.updateAlive(elapsed);
+		
 		if (y > G.height) {
 			alive = false;
 			return;

@@ -1,6 +1,6 @@
 package enemies;
 
-import kala.behaviors.graphics.SpriteAnimation;
+import kala.behaviors.display.SpriteAnimation;
 import kala.math.Random;
 import kala.util.pool.Pool;
 import kha.FastFloat;
@@ -92,6 +92,8 @@ class EnemyC extends Enemy {
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {
+		super.updateAlive(elapsed);
+		
 		if (attacking) {
 			if (scale.y > -baseScale) scale.y -= flipSpeed * elapsed;
 			else {
