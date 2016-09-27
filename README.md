@@ -3,22 +3,21 @@
 
 ###PLAY:
 
-There are two versions of the games:
+Only work as intended on Chrome.
 
 - FPS capped at 60: https://melon-not-found.github.io/bioDigit-Kala/cap60/
 
 - FPS capped at 30 (recommended for mobile devices): https://melon-not-found.github.io/bioDigit-Kala/cap30/
 
-Only work correctly on Chrome for all devices.
-
 ###KNOWN BUGS:
 
 - Audio settings don't work when playing on mobile devices. Related to https://github.com/KTXSoftware/Kha/issues/299.
 - Sometime touch gets stuck.
+- Sometime left click doesn't work.
 
 ###NOTES
 
-- The game framerate is capped at 30fps when 'cap_30' is defined and building in release mode. Currently Kha is not yet implemented a way for us to limit rendering framerate so you will have to directly make change on Kha for that.
+- The game framerate is capped at 30fps when 'cap_30' is defined and building in release mode. Currently Kha is not yet implemented a way to limit rendering framerate so you will have to directly make change on Kha for that.
 
 - Art assets were packed with [TexturePacker](https://www.codeandweb.com/texturepacker) free version.
 
