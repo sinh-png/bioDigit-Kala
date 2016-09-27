@@ -54,7 +54,11 @@ kala_audio_AudioGroup.prototype = {
 		if(volume == null) {
 			volume = 1;
 		}
-		var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(sound,loop),this,kept);
+		var khaChannel = kha_audio2_Audio1.play(sound,loop);
+		if(khaChannel == null) {
+			return null;
+		}
+		var channel = new kala_audio_AudioChannel(khaChannel,this,kept);
 		channel._volume = volume;
 		channel.channel.set_volume(this.muted?0:volume * this._volume);
 		this.channels.push(channel);
@@ -70,7 +74,11 @@ kala_audio_AudioGroup.prototype = {
 		if(volume == null) {
 			volume = 1;
 		}
-		var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.stream(sound,loop),this,kept);
+		var khaChannel = kha_audio2_Audio1.stream(sound,loop);
+		if(khaChannel == null) {
+			return null;
+		}
+		var channel = new kala_audio_AudioChannel(khaChannel,this,kept);
 		channel._volume = volume;
 		channel.channel.set_volume(this.muted?0:volume * this._volume);
 		this.channels.push(channel);
@@ -2553,10 +2561,13 @@ enemies_Lightning.shoot = function(x) {
 	_this1.nodes.push(kala_behaviors_tween_TweenNode.WAIT(40));
 	_this1.nodes.push(kala_behaviors_tween_TweenNode.CALL(function(_) {
 		var _this2 = G.sfxGroup;
-		var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.lightning,false),_this2,false);
-		channel._volume = 0.5;
-		channel.channel.set_volume(_this2.muted?0:0.5 * _this2._volume);
-		_this2.channels.push(channel);
+		var khaChannel = kha_audio2_Audio1.play(R.sounds.lightning,false);
+		if(khaChannel != null) {
+			var channel = new kala_audio_AudioChannel(khaChannel,_this2,false);
+			channel._volume = 0.5;
+			channel.channel.set_volume(_this2.muted?0:0.5 * _this2._volume);
+			_this2.channels.push(channel);
+		}
 	}));
 	_this1.manager._tweens.push(_this1);
 	_this1.nextNode();
@@ -3137,10 +3148,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 								enemy2.isSubEnemy = false;
 								var actionCB = function() {
 									var _this6 = G.sfxGroup;
-									var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this6,false);
-									channel._volume = 0.4;
-									channel.channel.set_volume(_this6.muted?0:0.4 * _this6._volume);
-									_this6.channels.push(channel);
+									var khaChannel = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel != null) {
+										var channel = new kala_audio_AudioChannel(khaChannel,_this6,false);
+										channel._volume = 0.4;
+										channel.channel.set_volume(_this6.muted?0:0.4 * _this6._volume);
+										_this6.channels.push(channel);
+									}
 									var _g = 0;
 									while(_g < 6) {
 										var angle = 60 * _g++;
@@ -3253,10 +3267,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 								enemy3.isSubEnemy = false;
 								var actionCB1 = function() {
 									var _this13 = G.sfxGroup;
-									var channel1 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this13,false);
-									channel1._volume = 0.4;
-									channel1.channel.set_volume(_this13.muted?0:0.4 * _this13._volume);
-									_this13.channels.push(channel1);
+									var khaChannel1 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel1 != null) {
+										var channel1 = new kala_audio_AudioChannel(khaChannel1,_this13,false);
+										channel1._volume = 0.4;
+										channel1.channel.set_volume(_this13.muted?0:0.4 * _this13._volume);
+										_this13.channels.push(channel1);
+									}
 									var _g1 = 0;
 									while(_g1 < 6) {
 										var angle1 = 60 * _g1++;
@@ -3369,10 +3386,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 								enemy4.isSubEnemy = false;
 								var actionCB2 = function() {
 									var _this20 = G.sfxGroup;
-									var channel2 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this20,false);
-									channel2._volume = 0.4;
-									channel2.channel.set_volume(_this20.muted?0:0.4 * _this20._volume);
-									_this20.channels.push(channel2);
+									var khaChannel2 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel2 != null) {
+										var channel2 = new kala_audio_AudioChannel(khaChannel2,_this20,false);
+										channel2._volume = 0.4;
+										channel2.channel.set_volume(_this20.muted?0:0.4 * _this20._volume);
+										_this20.channels.push(channel2);
+									}
 									var _g2 = 0;
 									while(_g2 < 6) {
 										var angle2 = 60 * _g2++;
@@ -3635,10 +3655,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 									var n = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 									var _this32 = G.sfxGroup;
 									var volume = n / 15;
-									var channel3 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this32,false);
-									channel3._volume = volume;
-									channel3.channel.set_volume(_this32.muted?0:volume * _this32._volume);
-									_this32.channels.push(channel3);
+									var khaChannel3 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel3 != null) {
+										var channel3 = new kala_audio_AudioChannel(khaChannel3,_this32,false);
+										channel3._volume = volume;
+										channel3.channel.set_volume(_this32.muted?0:volume * _this32._volume);
+										_this32.channels.push(channel3);
+									}
 									var _g11 = 0;
 									while(_g11 < n) {
 										++_g11;
@@ -3750,10 +3773,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 									var n1 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 									var _this38 = G.sfxGroup;
 									var volume1 = n1 / 15;
-									var channel4 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this38,false);
-									channel4._volume = volume1;
-									channel4.channel.set_volume(_this38.muted?0:volume1 * _this38._volume);
-									_this38.channels.push(channel4);
+									var khaChannel4 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel4 != null) {
+										var channel4 = new kala_audio_AudioChannel(khaChannel4,_this38,false);
+										channel4._volume = volume1;
+										channel4.channel.set_volume(_this38.muted?0:volume1 * _this38._volume);
+										_this38.channels.push(channel4);
+									}
 									var _g12 = 0;
 									while(_g12 < n1) {
 										++_g12;
@@ -3865,10 +3891,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 									var n2 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 									var _this44 = G.sfxGroup;
 									var volume2 = n2 / 15;
-									var channel5 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this44,false);
-									channel5._volume = volume2;
-									channel5.channel.set_volume(_this44.muted?0:volume2 * _this44._volume);
-									_this44.channels.push(channel5);
+									var khaChannel5 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel5 != null) {
+										var channel5 = new kala_audio_AudioChannel(khaChannel5,_this44,false);
+										channel5._volume = volume2;
+										channel5.channel.set_volume(_this44.muted?0:volume2 * _this44._volume);
+										_this44.channels.push(channel5);
+									}
 									var _g13 = 0;
 									while(_g13 < n2) {
 										++_g13;
@@ -4071,10 +4100,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 								enemy13.isSubEnemy = false;
 								var actionCB6 = function() {
 									var _this55 = G.sfxGroup;
-									var channel6 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this55,false);
-									channel6._volume = 0.4;
-									channel6.channel.set_volume(_this55.muted?0:0.4 * _this55._volume);
-									_this55.channels.push(channel6);
+									var khaChannel6 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel6 != null) {
+										var channel6 = new kala_audio_AudioChannel(khaChannel6,_this55,false);
+										channel6._volume = 0.4;
+										channel6.channel.set_volume(_this55.muted?0:0.4 * _this55._volume);
+										_this55.channels.push(channel6);
+									}
 									var _g3 = 0;
 									while(_g3 < 6) {
 										var angle6 = 60 * _g3++;
@@ -4187,10 +4219,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 								enemy14.isSubEnemy = false;
 								var actionCB7 = function() {
 									var _this62 = G.sfxGroup;
-									var channel7 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this62,false);
-									channel7._volume = 0.4;
-									channel7.channel.set_volume(_this62.muted?0:0.4 * _this62._volume);
-									_this62.channels.push(channel7);
+									var khaChannel7 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel7 != null) {
+										var channel7 = new kala_audio_AudioChannel(khaChannel7,_this62,false);
+										channel7._volume = 0.4;
+										channel7.channel.set_volume(_this62.muted?0:0.4 * _this62._volume);
+										_this62.channels.push(channel7);
+									}
 									var _g4 = 0;
 									while(_g4 < 6) {
 										var angle7 = 60 * _g4++;
@@ -4303,10 +4338,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 								enemy15.isSubEnemy = false;
 								var actionCB8 = function() {
 									var _this69 = G.sfxGroup;
-									var channel8 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this69,false);
-									channel8._volume = 0.4;
-									channel8.channel.set_volume(_this69.muted?0:0.4 * _this69._volume);
-									_this69.channels.push(channel8);
+									var khaChannel8 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel8 != null) {
+										var channel8 = new kala_audio_AudioChannel(khaChannel8,_this69,false);
+										channel8._volume = 0.4;
+										channel8.channel.set_volume(_this69.muted?0:0.4 * _this69._volume);
+										_this69.channels.push(channel8);
+									}
 									var _g5 = 0;
 									while(_g5 < 6) {
 										var angle8 = 60 * _g5++;
@@ -4569,10 +4607,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 									var n3 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 									var _this81 = G.sfxGroup;
 									var volume3 = n3 / 15;
-									var channel9 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this81,false);
-									channel9._volume = volume3;
-									channel9.channel.set_volume(_this81.muted?0:volume3 * _this81._volume);
-									_this81.channels.push(channel9);
+									var khaChannel9 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel9 != null) {
+										var channel9 = new kala_audio_AudioChannel(khaChannel9,_this81,false);
+										channel9._volume = volume3;
+										channel9.channel.set_volume(_this81.muted?0:volume3 * _this81._volume);
+										_this81.channels.push(channel9);
+									}
 									var _g14 = 0;
 									while(_g14 < n3) {
 										++_g14;
@@ -4684,10 +4725,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 									var n4 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 									var _this87 = G.sfxGroup;
 									var volume4 = n4 / 15;
-									var channel10 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this87,false);
-									channel10._volume = volume4;
-									channel10.channel.set_volume(_this87.muted?0:volume4 * _this87._volume);
-									_this87.channels.push(channel10);
+									var khaChannel10 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel10 != null) {
+										var channel10 = new kala_audio_AudioChannel(khaChannel10,_this87,false);
+										channel10._volume = volume4;
+										channel10.channel.set_volume(_this87.muted?0:volume4 * _this87._volume);
+										_this87.channels.push(channel10);
+									}
 									var _g15 = 0;
 									while(_g15 < n4) {
 										++_g15;
@@ -4799,10 +4843,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 									var n5 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 									var _this93 = G.sfxGroup;
 									var volume5 = n5 / 15;
-									var channel11 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this93,false);
-									channel11._volume = volume5;
-									channel11.channel.set_volume(_this93.muted?0:volume5 * _this93._volume);
-									_this93.channels.push(channel11);
+									var khaChannel11 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+									if(khaChannel11 != null) {
+										var channel11 = new kala_audio_AudioChannel(khaChannel11,_this93,false);
+										channel11._volume = volume5;
+										channel11.channel.set_volume(_this93.muted?0:volume5 * _this93._volume);
+										_this93.channels.push(channel11);
+									}
 									var _g16 = 0;
 									while(_g16 < n5) {
 										++_g16;
@@ -5280,10 +5327,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 				enemy2.isSubEnemy = false;
 				var actionCB = function() {
 					var _this6 = G.sfxGroup;
-					var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this6,false);
-					channel._volume = 0.4;
-					channel.channel.set_volume(_this6.muted?0:0.4 * _this6._volume);
-					_this6.channels.push(channel);
+					var khaChannel = kha_audio2_Audio1.play(R.sounds.spawn,false);
+					if(khaChannel != null) {
+						var channel = new kala_audio_AudioChannel(khaChannel,_this6,false);
+						channel._volume = 0.4;
+						channel.channel.set_volume(_this6.muted?0:0.4 * _this6._volume);
+						_this6.channels.push(channel);
+					}
 					var _g = 0;
 					while(_g < 6) {
 						var angle = 60 * _g++;
@@ -5396,10 +5446,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 				enemy3.isSubEnemy = false;
 				var actionCB1 = function() {
 					var _this13 = G.sfxGroup;
-					var channel1 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this13,false);
-					channel1._volume = 0.4;
-					channel1.channel.set_volume(_this13.muted?0:0.4 * _this13._volume);
-					_this13.channels.push(channel1);
+					var khaChannel1 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+					if(khaChannel1 != null) {
+						var channel1 = new kala_audio_AudioChannel(khaChannel1,_this13,false);
+						channel1._volume = 0.4;
+						channel1.channel.set_volume(_this13.muted?0:0.4 * _this13._volume);
+						_this13.channels.push(channel1);
+					}
 					var _g1 = 0;
 					while(_g1 < 6) {
 						var angle1 = 60 * _g1++;
@@ -5512,10 +5565,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 				enemy4.isSubEnemy = false;
 				var actionCB2 = function() {
 					var _this20 = G.sfxGroup;
-					var channel2 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this20,false);
-					channel2._volume = 0.4;
-					channel2.channel.set_volume(_this20.muted?0:0.4 * _this20._volume);
-					_this20.channels.push(channel2);
+					var khaChannel2 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+					if(khaChannel2 != null) {
+						var channel2 = new kala_audio_AudioChannel(khaChannel2,_this20,false);
+						channel2._volume = 0.4;
+						channel2.channel.set_volume(_this20.muted?0:0.4 * _this20._volume);
+						_this20.channels.push(channel2);
+					}
 					var _g2 = 0;
 					while(_g2 < 6) {
 						var angle2 = 60 * _g2++;
@@ -5778,10 +5834,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 					var n = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 					var _this32 = G.sfxGroup;
 					var volume = n / 15;
-					var channel3 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this32,false);
-					channel3._volume = volume;
-					channel3.channel.set_volume(_this32.muted?0:volume * _this32._volume);
-					_this32.channels.push(channel3);
+					var khaChannel3 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+					if(khaChannel3 != null) {
+						var channel3 = new kala_audio_AudioChannel(khaChannel3,_this32,false);
+						channel3._volume = volume;
+						channel3.channel.set_volume(_this32.muted?0:volume * _this32._volume);
+						_this32.channels.push(channel3);
+					}
 					var _g11 = 0;
 					while(_g11 < n) {
 						++_g11;
@@ -5893,10 +5952,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 					var n1 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 					var _this38 = G.sfxGroup;
 					var volume1 = n1 / 15;
-					var channel4 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this38,false);
-					channel4._volume = volume1;
-					channel4.channel.set_volume(_this38.muted?0:volume1 * _this38._volume);
-					_this38.channels.push(channel4);
+					var khaChannel4 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+					if(khaChannel4 != null) {
+						var channel4 = new kala_audio_AudioChannel(khaChannel4,_this38,false);
+						channel4._volume = volume1;
+						channel4.channel.set_volume(_this38.muted?0:volume1 * _this38._volume);
+						_this38.channels.push(channel4);
+					}
 					var _g12 = 0;
 					while(_g12 < n1) {
 						++_g12;
@@ -6008,10 +6070,13 @@ states_PlayState.prototype = $extend(kala_objects_group_Group.prototype,{
 					var n2 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 					var _this44 = G.sfxGroup;
 					var volume2 = n2 / 15;
-					var channel5 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this44,false);
-					channel5._volume = volume2;
-					channel5.channel.set_volume(_this44.muted?0:volume2 * _this44._volume);
-					_this44.channels.push(channel5);
+					var khaChannel5 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+					if(khaChannel5 != null) {
+						var channel5 = new kala_audio_AudioChannel(khaChannel5,_this44,false);
+						channel5._volume = volume2;
+						channel5.channel.set_volume(_this44.muted?0:volume2 * _this44._volume);
+						_this44.channels.push(channel5);
+					}
 					var _g13 = 0;
 					while(_g13 < n2) {
 						++_g13;
@@ -6486,10 +6551,13 @@ var enemies_Boss = function() {
 			_this9.nodes.push(kala_behaviors_tween_TweenNode.WAIT(40));
 			_this9.nodes.push(kala_behaviors_tween_TweenNode.CALL(function(_2) {
 				var _this10 = G.sfxGroup;
-				var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.lightning,false),_this10,false);
-				channel._volume = 0.5;
-				channel.channel.set_volume(_this10.muted?0:0.5 * _this10._volume);
-				_this10.channels.push(channel);
+				var khaChannel = kha_audio2_Audio1.play(R.sounds.lightning,false);
+				if(khaChannel != null) {
+					var channel = new kala_audio_AudioChannel(khaChannel,_this10,false);
+					channel._volume = 0.5;
+					channel.channel.set_volume(_this10.muted?0:0.5 * _this10._volume);
+					_this10.channels.push(channel);
+				}
 			}));
 			_this9.manager._tweens.push(_this9);
 			_this9.nextNode();
@@ -7451,10 +7519,13 @@ enemies_EnemyA.prototype = $extend(enemies_Enemy.prototype,{
 		if(this.position.y > 400 && this.vspeed > 0) {
 			var _this3 = G.sfxGroup;
 			var volume = this.size / 5;
-			var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.bounce,false),_this3,false);
-			channel._volume = volume;
-			channel.channel.set_volume(_this3.muted?0:volume * _this3._volume);
-			_this3.channels.push(channel);
+			var khaChannel = kha_audio2_Audio1.play(R.sounds.bounce,false);
+			if(khaChannel != null) {
+				var channel = new kala_audio_AudioChannel(khaChannel,_this3,false);
+				channel._volume = volume;
+				channel.channel.set_volume(_this3.muted?0:volume * _this3._volume);
+				_this3.channels.push(channel);
+			}
 			this.scale.y *= 0.8;
 			this.vspeed = -12;
 		} else if(this.scale.y < this.baseScale) {
@@ -8490,10 +8561,13 @@ enemies_EnemyB.create = function(x,y) {
 	enemy.isSubEnemy = false;
 	var actionCB = function() {
 		var _this2 = G.sfxGroup;
-		var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this2,false);
-		channel._volume = 0.4;
-		channel.channel.set_volume(_this2.muted?0:0.4 * _this2._volume);
-		_this2.channels.push(channel);
+		var khaChannel = kha_audio2_Audio1.play(R.sounds.spawn,false);
+		if(khaChannel != null) {
+			var channel = new kala_audio_AudioChannel(khaChannel,_this2,false);
+			channel._volume = 0.4;
+			channel.channel.set_volume(_this2.muted?0:0.4 * _this2._volume);
+			_this2.channels.push(channel);
+		}
 		var _g = 0;
 		while(_g < 6) {
 			var angle = 60 * _g++;
@@ -8608,10 +8682,13 @@ enemies_EnemyB.createRandomPos = function() {
 		enemy.isSubEnemy = false;
 		var actionCB = function() {
 			var _this2 = G.sfxGroup;
-			var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this2,false);
-			channel._volume = 0.4;
-			channel.channel.set_volume(_this2.muted?0:0.4 * _this2._volume);
-			_this2.channels.push(channel);
+			var khaChannel = kha_audio2_Audio1.play(R.sounds.spawn,false);
+			if(khaChannel != null) {
+				var channel = new kala_audio_AudioChannel(khaChannel,_this2,false);
+				channel._volume = 0.4;
+				channel.channel.set_volume(_this2.muted?0:0.4 * _this2._volume);
+				_this2.channels.push(channel);
+			}
 			var _g = 0;
 			while(_g < 6) {
 				var angle = 60 * _g++;
@@ -8724,10 +8801,13 @@ enemies_EnemyB.createRandomPos = function() {
 		enemy1.isSubEnemy = false;
 		var actionCB1 = function() {
 			var _this9 = G.sfxGroup;
-			var channel1 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this9,false);
-			channel1._volume = 0.4;
-			channel1.channel.set_volume(_this9.muted?0:0.4 * _this9._volume);
-			_this9.channels.push(channel1);
+			var khaChannel1 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+			if(khaChannel1 != null) {
+				var channel1 = new kala_audio_AudioChannel(khaChannel1,_this9,false);
+				channel1._volume = 0.4;
+				channel1.channel.set_volume(_this9.muted?0:0.4 * _this9._volume);
+				_this9.channels.push(channel1);
+			}
 			var _g1 = 0;
 			while(_g1 < 6) {
 				var angle1 = 60 * _g1++;
@@ -8840,10 +8920,13 @@ enemies_EnemyB.createRandomPos = function() {
 		enemy2.isSubEnemy = false;
 		var actionCB2 = function() {
 			var _this16 = G.sfxGroup;
-			var channel2 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this16,false);
-			channel2._volume = 0.4;
-			channel2.channel.set_volume(_this16.muted?0:0.4 * _this16._volume);
-			_this16.channels.push(channel2);
+			var khaChannel2 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+			if(khaChannel2 != null) {
+				var channel2 = new kala_audio_AudioChannel(khaChannel2,_this16,false);
+				channel2._volume = 0.4;
+				channel2.channel.set_volume(_this16.muted?0:0.4 * _this16._volume);
+				_this16.channels.push(channel2);
+			}
 			var _g2 = 0;
 			while(_g2 < 6) {
 				var angle2 = 60 * _g2++;
@@ -9437,10 +9520,13 @@ enemies_EnemyC.prototype = $extend(enemies_Enemy.prototype,{
 				if(!this.flapped) {
 					var _this7 = G.sfxGroup;
 					var volume = this.size / 5;
-					var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.flap,false),_this7,false);
-					channel._volume = volume;
-					channel.channel.set_volume(_this7.muted?0:volume * _this7._volume);
-					_this7.channels.push(channel);
+					var khaChannel = kha_audio2_Audio1.play(R.sounds.flap,false);
+					if(khaChannel != null) {
+						var channel = new kala_audio_AudioChannel(khaChannel,_this7,false);
+						channel._volume = volume;
+						channel.channel.set_volume(_this7.muted?0:volume * _this7._volume);
+						_this7.channels.push(channel);
+					}
 				}
 				if(!this.flapped) {
 					this.vspeed = -this.flapPower;
@@ -9917,10 +10003,13 @@ player_Player.prototype = $extend(kala_objects_sprite_Sprite.prototype,{
 					_this3.nodes.push(kala_behaviors_tween_TweenNode.CALL(function(_) {
 						var _this4 = G.sfxGroup;
 						var volume = (bonus + 1) / 2;
-						var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.lightning,false),_this4,false);
-						channel._volume = volume;
-						channel.channel.set_volume(_this4.muted?0:volume * _this4._volume);
-						_this4.channels.push(channel);
+						var khaChannel = kha_audio2_Audio1.play(R.sounds.lightning,false);
+						if(khaChannel != null) {
+							var channel = new kala_audio_AudioChannel(khaChannel,_this4,false);
+							channel._volume = volume;
+							channel.channel.set_volume(_this4.muted?0:volume * _this4._volume);
+							_this4.channels.push(channel);
+						}
 					}));
 					_this3.manager._tweens.push(_this3);
 					_this3.nextNode();
@@ -10199,10 +10288,13 @@ player_Player.prototype = $extend(kala_objects_sprite_Sprite.prototype,{
 				_this3.nodes.push(kala_behaviors_tween_TweenNode.CALL(function(_) {
 					var _this4 = G.sfxGroup;
 					var volume = (bonus + 1) / 2;
-					var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.lightning,false),_this4,false);
-					channel._volume = volume;
-					channel.channel.set_volume(_this4.muted?0:volume * _this4._volume);
-					_this4.channels.push(channel);
+					var khaChannel = kha_audio2_Audio1.play(R.sounds.lightning,false);
+					if(khaChannel != null) {
+						var channel = new kala_audio_AudioChannel(khaChannel,_this4,false);
+						channel._volume = volume;
+						channel.channel.set_volume(_this4.muted?0:volume * _this4._volume);
+						_this4.channels.push(channel);
+					}
 				}));
 				_this3.manager._tweens.push(_this3);
 				_this3.nextNode();
@@ -10400,10 +10492,13 @@ enemies_EnemyD.create = function(x,y) {
 		var n = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 		var _this1 = G.sfxGroup;
 		var volume = n / 15;
-		var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this1,false);
-		channel._volume = volume;
-		channel.channel.set_volume(_this1.muted?0:volume * _this1._volume);
-		_this1.channels.push(channel);
+		var khaChannel = kha_audio2_Audio1.play(R.sounds.spawn,false);
+		if(khaChannel != null) {
+			var channel = new kala_audio_AudioChannel(khaChannel,_this1,false);
+			channel._volume = volume;
+			channel.channel.set_volume(_this1.muted?0:volume * _this1._volume);
+			_this1.channels.push(channel);
+		}
 		var _g1 = 0;
 		while(_g1 < n) {
 			++_g1;
@@ -10517,10 +10612,13 @@ enemies_EnemyD.createRandomPos = function() {
 			var n = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 			var _this1 = G.sfxGroup;
 			var volume = n / 15;
-			var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this1,false);
-			channel._volume = volume;
-			channel.channel.set_volume(_this1.muted?0:volume * _this1._volume);
-			_this1.channels.push(channel);
+			var khaChannel = kha_audio2_Audio1.play(R.sounds.spawn,false);
+			if(khaChannel != null) {
+				var channel = new kala_audio_AudioChannel(khaChannel,_this1,false);
+				channel._volume = volume;
+				channel.channel.set_volume(_this1.muted?0:volume * _this1._volume);
+				_this1.channels.push(channel);
+			}
 			var _g1 = 0;
 			while(_g1 < n) {
 				++_g1;
@@ -10632,10 +10730,13 @@ enemies_EnemyD.createRandomPos = function() {
 			var n1 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 			var _this7 = G.sfxGroup;
 			var volume1 = n1 / 15;
-			var channel1 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this7,false);
-			channel1._volume = volume1;
-			channel1.channel.set_volume(_this7.muted?0:volume1 * _this7._volume);
-			_this7.channels.push(channel1);
+			var khaChannel1 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+			if(khaChannel1 != null) {
+				var channel1 = new kala_audio_AudioChannel(khaChannel1,_this7,false);
+				channel1._volume = volume1;
+				channel1.channel.set_volume(_this7.muted?0:volume1 * _this7._volume);
+				_this7.channels.push(channel1);
+			}
 			var _g11 = 0;
 			while(_g11 < n1) {
 				++_g11;
@@ -10747,10 +10848,13 @@ enemies_EnemyD.createRandomPos = function() {
 			var n2 = kala_math__$Random_Random_$Impl_$.instance.GetIn(3,6);
 			var _this13 = G.sfxGroup;
 			var volume2 = n2 / 15;
-			var channel2 = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.spawn,false),_this13,false);
-			channel2._volume = volume2;
-			channel2.channel.set_volume(_this13.muted?0:volume2 * _this13._volume);
-			_this13.channels.push(channel2);
+			var khaChannel2 = kha_audio2_Audio1.play(R.sounds.spawn,false);
+			if(khaChannel2 != null) {
+				var channel2 = new kala_audio_AudioChannel(khaChannel2,_this13,false);
+				channel2._volume = volume2;
+				channel2.channel.set_volume(_this13.muted?0:volume2 * _this13._volume);
+				_this13.channels.push(channel2);
+			}
 			var _g12 = 0;
 			while(_g12 < n2) {
 				++_g12;
@@ -19012,16 +19116,16 @@ kala_util_types_Trio.prototype = {
 	,__class__: kala_util_types_Trio
 };
 var kha_ImageList = function() {
-	this.names = ["background_blur","invisible_pixel","sprite_sheet_1","sprite_sheet_2"];
+	this.names = ["background_blur","sprite_sheet_1","invisible_pixel","sprite_sheet_2"];
 	this.sprite_sheet_2Description = { files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"};
 	this.sprite_sheet_2Name = "sprite_sheet_2";
 	this.sprite_sheet_2 = null;
-	this.sprite_sheet_1Description = { files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"};
-	this.sprite_sheet_1Name = "sprite_sheet_1";
-	this.sprite_sheet_1 = null;
 	this.invisible_pixelDescription = { files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"};
 	this.invisible_pixelName = "invisible_pixel";
 	this.invisible_pixel = null;
+	this.sprite_sheet_1Description = { files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"};
+	this.sprite_sheet_1Name = "sprite_sheet_1";
+	this.sprite_sheet_1 = null;
 	this.background_blurDescription = { files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"};
 	this.background_blurName = "background_blur";
 	this.background_blur = null;
@@ -19041,18 +19145,6 @@ kha_ImageList.prototype = {
 		this.background_blur.unload();
 		this.background_blur = null;
 	}
-	,invisible_pixel: null
-	,invisible_pixelName: null
-	,invisible_pixelDescription: null
-	,invisible_pixelLoad: function(done) {
-		kha_Assets.loadImage("invisible_pixel",function(image) {
-			done();
-		});
-	}
-	,invisible_pixelUnload: function() {
-		this.invisible_pixel.unload();
-		this.invisible_pixel = null;
-	}
 	,sprite_sheet_1: null
 	,sprite_sheet_1Name: null
 	,sprite_sheet_1Description: null
@@ -19064,6 +19156,18 @@ kha_ImageList.prototype = {
 	,sprite_sheet_1Unload: function() {
 		this.sprite_sheet_1.unload();
 		this.sprite_sheet_1 = null;
+	}
+	,invisible_pixel: null
+	,invisible_pixelName: null
+	,invisible_pixelDescription: null
+	,invisible_pixelLoad: function(done) {
+		kha_Assets.loadImage("invisible_pixel",function(image) {
+			done();
+		});
+	}
+	,invisible_pixelUnload: function() {
+		this.invisible_pixel.unload();
+		this.invisible_pixel = null;
 	}
 	,sprite_sheet_2: null
 	,sprite_sheet_2Name: null
@@ -19081,19 +19185,19 @@ kha_ImageList.prototype = {
 	,__class__: kha_ImageList
 };
 var kha_SoundList = function() {
-	this.names = ["Dissonant_Waltz","bounce","flap","lightning","spawn","upgrade"];
+	this.names = ["Dissonant_Waltz","bounce","lightning","flap","spawn","upgrade"];
 	this.upgradeDescription = { files : ["upgrade.ogg"], type : "sound", name : "upgrade"};
 	this.upgradeName = "upgrade";
 	this.upgrade = null;
 	this.spawnDescription = { files : ["spawn.ogg"], type : "sound", name : "spawn"};
 	this.spawnName = "spawn";
 	this.spawn = null;
-	this.lightningDescription = { files : ["lightning.ogg"], type : "sound", name : "lightning"};
-	this.lightningName = "lightning";
-	this.lightning = null;
 	this.flapDescription = { files : ["flap.ogg"], type : "sound", name : "flap"};
 	this.flapName = "flap";
 	this.flap = null;
+	this.lightningDescription = { files : ["lightning.ogg"], type : "sound", name : "lightning"};
+	this.lightningName = "lightning";
+	this.lightning = null;
 	this.bounceDescription = { files : ["bounce.ogg"], type : "sound", name : "bounce"};
 	this.bounceName = "bounce";
 	this.bounce = null;
@@ -19128,18 +19232,6 @@ kha_SoundList.prototype = {
 		this.bounce.unload();
 		this.bounce = null;
 	}
-	,flap: null
-	,flapName: null
-	,flapDescription: null
-	,flapLoad: function(done) {
-		kha_Assets.loadSound("flap",function(sound) {
-			done();
-		});
-	}
-	,flapUnload: function() {
-		this.flap.unload();
-		this.flap = null;
-	}
 	,lightning: null
 	,lightningName: null
 	,lightningDescription: null
@@ -19151,6 +19243,18 @@ kha_SoundList.prototype = {
 	,lightningUnload: function() {
 		this.lightning.unload();
 		this.lightning = null;
+	}
+	,flap: null
+	,flapName: null
+	,flapDescription: null
+	,flapLoad: function(done) {
+		kha_Assets.loadSound("flap",function(sound) {
+			done();
+		});
+	}
+	,flapUnload: function() {
+		this.flap.unload();
+		this.flap = null;
 	}
 	,spawn: null
 	,spawnName: null
@@ -19180,13 +19284,13 @@ kha_SoundList.prototype = {
 	,__class__: kha_SoundList
 };
 var kha_BlobList = function() {
-	this.names = ["sprite_sheet_1_ssd","sprite_sheet_2_ssd","Montserrat_SIL_Open_Font_License_txt","SpaceMono_SIL_Open_Font_License_txt"];
-	this.SpaceMono_SIL_Open_Font_License_txtDescription = { files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"};
-	this.SpaceMono_SIL_Open_Font_License_txtName = "SpaceMono_SIL_Open_Font_License_txt";
-	this.SpaceMono_SIL_Open_Font_License_txt = null;
+	this.names = ["sprite_sheet_1_ssd","sprite_sheet_2_ssd","SpaceMono_SIL_Open_Font_License_txt","Montserrat_SIL_Open_Font_License_txt"];
 	this.Montserrat_SIL_Open_Font_License_txtDescription = { files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"};
 	this.Montserrat_SIL_Open_Font_License_txtName = "Montserrat_SIL_Open_Font_License_txt";
 	this.Montserrat_SIL_Open_Font_License_txt = null;
+	this.SpaceMono_SIL_Open_Font_License_txtDescription = { files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"};
+	this.SpaceMono_SIL_Open_Font_License_txtName = "SpaceMono_SIL_Open_Font_License_txt";
+	this.SpaceMono_SIL_Open_Font_License_txt = null;
 	this.sprite_sheet_2_ssdDescription = { files : ["sprite_sheet_2.ssd"], type : "blob", name : "sprite_sheet_2_ssd"};
 	this.sprite_sheet_2_ssdName = "sprite_sheet_2_ssd";
 	this.sprite_sheet_2_ssd = null;
@@ -19221,18 +19325,6 @@ kha_BlobList.prototype = {
 		this.sprite_sheet_2_ssd.unload();
 		this.sprite_sheet_2_ssd = null;
 	}
-	,Montserrat_SIL_Open_Font_License_txt: null
-	,Montserrat_SIL_Open_Font_License_txtName: null
-	,Montserrat_SIL_Open_Font_License_txtDescription: null
-	,Montserrat_SIL_Open_Font_License_txtLoad: function(done) {
-		kha_Assets.loadBlob("Montserrat_SIL_Open_Font_License_txt",function(blob) {
-			done();
-		});
-	}
-	,Montserrat_SIL_Open_Font_License_txtUnload: function() {
-		this.Montserrat_SIL_Open_Font_License_txt.unload();
-		this.Montserrat_SIL_Open_Font_License_txt = null;
-	}
 	,SpaceMono_SIL_Open_Font_License_txt: null
 	,SpaceMono_SIL_Open_Font_License_txtName: null
 	,SpaceMono_SIL_Open_Font_License_txtDescription: null
@@ -19245,34 +19337,34 @@ kha_BlobList.prototype = {
 		this.SpaceMono_SIL_Open_Font_License_txt.unload();
 		this.SpaceMono_SIL_Open_Font_License_txt = null;
 	}
+	,Montserrat_SIL_Open_Font_License_txt: null
+	,Montserrat_SIL_Open_Font_License_txtName: null
+	,Montserrat_SIL_Open_Font_License_txtDescription: null
+	,Montserrat_SIL_Open_Font_License_txtLoad: function(done) {
+		kha_Assets.loadBlob("Montserrat_SIL_Open_Font_License_txt",function(blob) {
+			done();
+		});
+	}
+	,Montserrat_SIL_Open_Font_License_txtUnload: function() {
+		this.Montserrat_SIL_Open_Font_License_txt.unload();
+		this.Montserrat_SIL_Open_Font_License_txt = null;
+	}
 	,names: null
 	,__class__: kha_BlobList
 };
 var kha_FontList = function() {
-	this.names = ["Montserrat_Bold","SpaceMono_Bold"];
-	this.SpaceMono_BoldDescription = { files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"};
-	this.SpaceMono_BoldName = "SpaceMono_Bold";
-	this.SpaceMono_Bold = null;
+	this.names = ["SpaceMono_Bold","Montserrat_Bold"];
 	this.Montserrat_BoldDescription = { files : ["Montserrat-Bold.ttf"], type : "font", name : "Montserrat_Bold"};
 	this.Montserrat_BoldName = "Montserrat_Bold";
 	this.Montserrat_Bold = null;
+	this.SpaceMono_BoldDescription = { files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"};
+	this.SpaceMono_BoldName = "SpaceMono_Bold";
+	this.SpaceMono_Bold = null;
 };
 $hxClasses["kha.FontList"] = kha_FontList;
 kha_FontList.__name__ = ["kha","FontList"];
 kha_FontList.prototype = {
-	Montserrat_Bold: null
-	,Montserrat_BoldName: null
-	,Montserrat_BoldDescription: null
-	,Montserrat_BoldLoad: function(done) {
-		kha_Assets.loadFont("Montserrat_Bold",function(font) {
-			done();
-		});
-	}
-	,Montserrat_BoldUnload: function() {
-		this.Montserrat_Bold.unload();
-		this.Montserrat_Bold = null;
-	}
-	,SpaceMono_Bold: null
+	SpaceMono_Bold: null
 	,SpaceMono_BoldName: null
 	,SpaceMono_BoldDescription: null
 	,SpaceMono_BoldLoad: function(done) {
@@ -19283,6 +19375,18 @@ kha_FontList.prototype = {
 	,SpaceMono_BoldUnload: function() {
 		this.SpaceMono_Bold.unload();
 		this.SpaceMono_Bold = null;
+	}
+	,Montserrat_Bold: null
+	,Montserrat_BoldName: null
+	,Montserrat_BoldDescription: null
+	,Montserrat_BoldLoad: function(done) {
+		kha_Assets.loadFont("Montserrat_Bold",function(font) {
+			done();
+		});
+	}
+	,Montserrat_BoldUnload: function() {
+		this.Montserrat_Bold.unload();
+		this.Montserrat_Bold = null;
 	}
 	,names: null
 	,__class__: kha_FontList
@@ -20870,27 +20974,27 @@ kha_Shaders.init = function() {
 	var data = Reflect.field(kha_Shaders,"painter_colored_fragData");
 	var bytes = haxe_Unserializer.run(data);
 	kha_Shaders.painter_colored_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes),"painter_colored_frag");
-	var data1 = Reflect.field(kha_Shaders,"painter_image_fragData");
+	var data1 = Reflect.field(kha_Shaders,"painter_colored_vertData");
 	var bytes1 = haxe_Unserializer.run(data1);
-	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes1),"painter_image_frag");
-	var data2 = Reflect.field(kha_Shaders,"painter_colored_vertData");
+	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes1),"painter_colored_vert");
+	var data2 = Reflect.field(kha_Shaders,"painter_image_fragData");
 	var bytes2 = haxe_Unserializer.run(data2);
-	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes2),"painter_colored_vert");
+	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes2),"painter_image_frag");
 	var data3 = Reflect.field(kha_Shaders,"painter_text_fragData");
 	var bytes3 = haxe_Unserializer.run(data3);
 	kha_Shaders.painter_text_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes3),"painter_text_frag");
 	var data4 = Reflect.field(kha_Shaders,"painter_text_vertData");
 	var bytes4 = haxe_Unserializer.run(data4);
 	kha_Shaders.painter_text_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes4),"painter_text_vert");
-	var data5 = Reflect.field(kha_Shaders,"painter_image_vertData");
+	var data5 = Reflect.field(kha_Shaders,"painter_video_fragData");
 	var bytes5 = haxe_Unserializer.run(data5);
-	kha_Shaders.painter_image_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes5),"painter_image_vert");
-	var data6 = Reflect.field(kha_Shaders,"painter_video_fragData");
+	kha_Shaders.painter_video_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes5),"painter_video_frag");
+	var data6 = Reflect.field(kha_Shaders,"painter_video_vertData");
 	var bytes6 = haxe_Unserializer.run(data6);
-	kha_Shaders.painter_video_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes6),"painter_video_frag");
-	var data7 = Reflect.field(kha_Shaders,"painter_video_vertData");
+	kha_Shaders.painter_video_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes6),"painter_video_vert");
+	var data7 = Reflect.field(kha_Shaders,"painter_image_vertData");
 	var bytes7 = haxe_Unserializer.run(data7);
-	kha_Shaders.painter_video_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes7),"painter_video_vert");
+	kha_Shaders.painter_image_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes7),"painter_image_vert");
 };
 var kha_Sound = function() {
 };
@@ -21237,7 +21341,7 @@ kha_SystemImpl.init = function(options,callback) {
 	callback();
 };
 kha_SystemImpl.initEx = function(title,options,windowCallback,callback) {
-	haxe_Log.trace("initEx is not supported on the html5 target, running init() with first window options",{ fileName : "SystemImpl.hx", lineNumber : 80, className : "kha.SystemImpl", methodName : "initEx"});
+	haxe_Log.trace("initEx is not supported on the html5 target, running init() with first window options",{ fileName : "SystemImpl.hx", lineNumber : 81, className : "kha.SystemImpl", methodName : "initEx"});
 	kha_SystemImpl.init({ title : title, width : options[0].width, height : options[0].height},callback);
 	if(windowCallback != null) {
 		windowCallback(0);
@@ -21413,7 +21517,7 @@ kha_SystemImpl.loadFinished = function() {
 		}
 	} catch( e ) {
 		if (e instanceof js__$Boot_HaxeError) e = e.val;
-		haxe_Log.trace(e,{ fileName : "SystemImpl.hx", lineNumber : 289, className : "kha.SystemImpl", methodName : "loadFinished"});
+		haxe_Log.trace(e,{ fileName : "SystemImpl.hx", lineNumber : 290, className : "kha.SystemImpl", methodName : "loadFinished"});
 	}
 	kha_SystemImpl.setCanvas(canvas);
 	if(gl) {
@@ -21472,9 +21576,11 @@ kha_SystemImpl.loadFinished = function() {
 				}
 			}
 		}
-		b = !b;
-		if(b) {
-			return;
+		if(kha_System.get_refreshRate() == 30) {
+			b = !b;
+			if(b) {
+				return;
+			}
 		}
 		kha_Scheduler.executeFrame();
 		if(canvas.getContext) {
@@ -38121,10 +38227,13 @@ player_Lightning.shoot = function(x,bonus) {
 	_this1.nodes.push(kala_behaviors_tween_TweenNode.CALL(function(_) {
 		var _this2 = G.sfxGroup;
 		var volume = (bonus + 1) / 2;
-		var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.lightning,false),_this2,false);
-		channel._volume = volume;
-		channel.channel.set_volume(_this2.muted?0:volume * _this2._volume);
-		_this2.channels.push(channel);
+		var khaChannel = kha_audio2_Audio1.play(R.sounds.lightning,false);
+		if(khaChannel != null) {
+			var channel = new kala_audio_AudioChannel(khaChannel,_this2,false);
+			channel._volume = volume;
+			channel.channel.set_volume(_this2.muted?0:volume * _this2._volume);
+			_this2.channels.push(channel);
+		}
 	}));
 	_this1.manager._tweens.push(_this1);
 	_this1.nextNode();
@@ -38313,10 +38422,13 @@ player_Minion.prototype = $extend(kala_objects_sprite_Sprite.prototype,{
 				_this1.nodes.push(kala_behaviors_tween_TweenNode.WAIT(2));
 				_this1.nodes.push(kala_behaviors_tween_TweenNode.CALL(function(_) {
 					var _this2 = G.sfxGroup;
-					var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.lightning,false),_this2,false);
-					channel._volume = 0.5;
-					channel.channel.set_volume(_this2.muted?0:0.5 * _this2._volume);
-					_this2.channels.push(channel);
+					var khaChannel = kha_audio2_Audio1.play(R.sounds.lightning,false);
+					if(khaChannel != null) {
+						var channel = new kala_audio_AudioChannel(khaChannel,_this2,false);
+						channel._volume = 0.5;
+						channel.channel.set_volume(_this2.muted?0:0.5 * _this2._volume);
+						_this2.channels.push(channel);
+					}
 				}));
 				_this1.manager._tweens.push(_this1);
 				_this1.nextNode();
@@ -39970,10 +40082,13 @@ states_UpgradeState.prototype = $extend(kala_objects_group_Group.prototype,{
 	}
 	,upgradeItem: function() {
 		var _this = G.sfxGroup;
-		var channel = new kala_audio_AudioChannel(kha_audio2_Audio1.play(R.sounds.upgrade,false),_this,false);
-		channel._volume = 1;
-		channel.channel.set_volume(_this.muted?0:_this._volume);
-		_this.channels.push(channel);
+		var khaChannel = kha_audio2_Audio1.play(R.sounds.upgrade,false);
+		if(khaChannel != null) {
+			var channel = new kala_audio_AudioChannel(khaChannel,_this,false);
+			channel._volume = 1;
+			channel.channel.set_volume(_this.muted?0:_this._volume);
+			_this.channels.push(channel);
+		}
 		UpgradeData.upgrade(this.currentItem);
 		this.set_currentItem(this.currentItem);
 		this.updateItems();
@@ -40549,7 +40664,7 @@ kala_Kala.html5 = new kala_system_HTML5();
 kala_Kala._prvUpdateTime = 0;
 kala_asset_Assets.loader = new kala_asset_Loader();
 kala_asset_Assets.sheets = new kala_asset_SheetList();
-kala_asset_Assets.files = [{ files : ["Dissonant_Waltz.ogg"], type : "sound", name : "Dissonant_Waltz"},{ files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"},{ files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"},{ files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"},{ files : ["sprite_sheet_1.ssd"], type : "blob", name : "sprite_sheet_1_ssd"},{ files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"},{ files : ["sprite_sheet_2.ssd"], type : "blob", name : "sprite_sheet_2_ssd"},{ files : ["bounce.ogg"], type : "sound", name : "bounce"},{ files : ["flap.ogg"], type : "sound", name : "flap"},{ files : ["lightning.ogg"], type : "sound", name : "lightning"},{ files : ["spawn.ogg"], type : "sound", name : "spawn"},{ files : ["upgrade.ogg"], type : "sound", name : "upgrade"},{ files : ["Montserrat-Bold.ttf"], type : "font", name : "Montserrat_Bold"},{ files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"},{ files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"},{ files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"},{ inputs : [{ type : "vec4", name : "fragmentColor"}], uniforms : [], files : ["painter-colored.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_colored_frag"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-image.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_image_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-colored.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_colored_vert"},{ inputs : [{ type : "vec4", name : "fragmentColor"},{ type : "vec2", name : "texCoord"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-text.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_text_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-text.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_text_vert"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-image.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_image_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-video.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_video_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-video.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_video_vert"}];
+kala_asset_Assets.files = [{ files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"},{ files : ["Dissonant_Waltz.ogg"], type : "sound", name : "Dissonant_Waltz"},{ files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"},{ files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"},{ files : ["sprite_sheet_1.ssd"], type : "blob", name : "sprite_sheet_1_ssd"},{ files : ["sprite_sheet_2.ssd"], type : "blob", name : "sprite_sheet_2_ssd"},{ files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"},{ files : ["bounce.ogg"], type : "sound", name : "bounce"},{ files : ["lightning.ogg"], type : "sound", name : "lightning"},{ files : ["flap.ogg"], type : "sound", name : "flap"},{ files : ["spawn.ogg"], type : "sound", name : "spawn"},{ files : ["upgrade.ogg"], type : "sound", name : "upgrade"},{ files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"},{ files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"},{ files : ["Montserrat-Bold.ttf"], type : "font", name : "Montserrat_Bold"},{ files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"},{ inputs : [{ type : "vec4", name : "fragmentColor"}], uniforms : [], files : ["painter-colored.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_colored_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-colored.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_colored_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-image.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_image_frag"},{ inputs : [{ type : "vec4", name : "fragmentColor"},{ type : "vec2", name : "texCoord"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-text.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_text_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-text.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_text_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-video.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_video_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-video.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_video_vert"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-image.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_image_vert"}];
 kala_audio_Audio.groups = [];
 kala_behaviors_collision_basic_shapes_CollisionRectangle.pool = new kala_util_pool_Pool(function() {
 	return new kala_behaviors_collision_basic_shapes_CollisionRectangle();
@@ -40605,13 +40720,13 @@ kha_Scheduler.DIF_COUNT = 3;
 kha_Scheduler.maxframetime = 0.5;
 kha_Scheduler.startTime = 0;
 kha_Shaders.painter_colored_fragData = "s190:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdmFyeWluZyB2ZWM0IGZyYWdtZW50Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9GcmFnRGF0YVswXSA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
-kha_Shaders.painter_image_fragData = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBtZWRpdW1wIHNhbXBsZXIyRCB0ZXg7Cgp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3IpOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
 kha_Shaders.painter_colored_vertData = "s334:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IChwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKSk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
+kha_Shaders.painter_image_fragData = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBtZWRpdW1wIHNhbXBsZXIyRCB0ZXg7Cgp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3IpOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
 kha_Shaders.painter_text_fragData = "s340:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBtZWRpdW1wIHNhbXBsZXIyRCB0ZXg7Cgp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwoKdm9pZCBtYWluKCkKewogICAgZ2xfRnJhZ0RhdGFbMF0gPSB2ZWM0KGZyYWdtZW50Q29sb3IueHl6LCAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpLnggKiBmcmFnbWVudENvbG9yLncpKTsKfQoK";
 kha_Shaders.painter_text_vertData = "s439:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IChwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKSk7CiAgICB0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwogICAgZnJhZ21lbnRDb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
-kha_Shaders.painter_image_vertData = "s418:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCkpOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGNvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_Shaders.painter_video_fragData = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBtZWRpdW1wIHNhbXBsZXIyRCB0ZXg7Cgp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3IpOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
 kha_Shaders.painter_video_vertData = "s418:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCkpOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGNvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
+kha_Shaders.painter_image_vertData = "s418:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCkpOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGNvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
 kha_System.renderListeners = [];
 kha_System.foregroundListeners = [];
 kha_System.resumeListeners = [];
