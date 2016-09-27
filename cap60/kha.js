@@ -18563,7 +18563,7 @@ kala_objects_text_Text.prototype = $extend(kala_objects_text_BasicText.prototype
 			g2.set_opacity(this.opacity * this.bgOpacity);
 			g2.fillRect(0,0,this.get_width(),this.get_height());
 		}
-		if(this.borderOpacity > 0 || _$UInt_UInt_$Impl_$.gt(this.borderSize,0)) {
+		if(this.borderOpacity > 0 && _$UInt_UInt_$Impl_$.gt(this.borderSize,0)) {
 			var src1 = this.borderColor;
 			var colorBlendMode1 = this.colorBlendMode;
 			var colorAlphaBlendMode1 = this.colorAlphaBlendMode;
@@ -19121,16 +19121,16 @@ kala_util_types_Trio.prototype = {
 	,__class__: kala_util_types_Trio
 };
 var kha_ImageList = function() {
-	this.names = ["background_blur","invisible_pixel","sprite_sheet_1","sprite_sheet_2"];
+	this.names = ["background_blur","sprite_sheet_1","invisible_pixel","sprite_sheet_2"];
 	this.sprite_sheet_2Description = { files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"};
 	this.sprite_sheet_2Name = "sprite_sheet_2";
 	this.sprite_sheet_2 = null;
-	this.sprite_sheet_1Description = { files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"};
-	this.sprite_sheet_1Name = "sprite_sheet_1";
-	this.sprite_sheet_1 = null;
 	this.invisible_pixelDescription = { files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"};
 	this.invisible_pixelName = "invisible_pixel";
 	this.invisible_pixel = null;
+	this.sprite_sheet_1Description = { files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"};
+	this.sprite_sheet_1Name = "sprite_sheet_1";
+	this.sprite_sheet_1 = null;
 	this.background_blurDescription = { files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"};
 	this.background_blurName = "background_blur";
 	this.background_blur = null;
@@ -19150,18 +19150,6 @@ kha_ImageList.prototype = {
 		this.background_blur.unload();
 		this.background_blur = null;
 	}
-	,invisible_pixel: null
-	,invisible_pixelName: null
-	,invisible_pixelDescription: null
-	,invisible_pixelLoad: function(done) {
-		kha_Assets.loadImage("invisible_pixel",function(image) {
-			done();
-		});
-	}
-	,invisible_pixelUnload: function() {
-		this.invisible_pixel.unload();
-		this.invisible_pixel = null;
-	}
 	,sprite_sheet_1: null
 	,sprite_sheet_1Name: null
 	,sprite_sheet_1Description: null
@@ -19173,6 +19161,18 @@ kha_ImageList.prototype = {
 	,sprite_sheet_1Unload: function() {
 		this.sprite_sheet_1.unload();
 		this.sprite_sheet_1 = null;
+	}
+	,invisible_pixel: null
+	,invisible_pixelName: null
+	,invisible_pixelDescription: null
+	,invisible_pixelLoad: function(done) {
+		kha_Assets.loadImage("invisible_pixel",function(image) {
+			done();
+		});
+	}
+	,invisible_pixelUnload: function() {
+		this.invisible_pixel.unload();
+		this.invisible_pixel = null;
 	}
 	,sprite_sheet_2: null
 	,sprite_sheet_2Name: null
@@ -19190,16 +19190,16 @@ kha_ImageList.prototype = {
 	,__class__: kha_ImageList
 };
 var kha_SoundList = function() {
-	this.names = ["Dissonant_Waltz","bounce","flap","spawn","upgrade","lightning"];
-	this.lightningDescription = { files : ["lightning.ogg"], type : "sound", name : "lightning"};
-	this.lightningName = "lightning";
-	this.lightning = null;
-	this.upgradeDescription = { files : ["upgrade.ogg"], type : "sound", name : "upgrade"};
-	this.upgradeName = "upgrade";
-	this.upgrade = null;
+	this.names = ["Dissonant_Waltz","bounce","flap","lightning","upgrade","spawn"];
 	this.spawnDescription = { files : ["spawn.ogg"], type : "sound", name : "spawn"};
 	this.spawnName = "spawn";
 	this.spawn = null;
+	this.upgradeDescription = { files : ["upgrade.ogg"], type : "sound", name : "upgrade"};
+	this.upgradeName = "upgrade";
+	this.upgrade = null;
+	this.lightningDescription = { files : ["lightning.ogg"], type : "sound", name : "lightning"};
+	this.lightningName = "lightning";
+	this.lightning = null;
 	this.flapDescription = { files : ["flap.ogg"], type : "sound", name : "flap"};
 	this.flapName = "flap";
 	this.flap = null;
@@ -19249,17 +19249,17 @@ kha_SoundList.prototype = {
 		this.flap.unload();
 		this.flap = null;
 	}
-	,spawn: null
-	,spawnName: null
-	,spawnDescription: null
-	,spawnLoad: function(done) {
-		kha_Assets.loadSound("spawn",function(sound) {
+	,lightning: null
+	,lightningName: null
+	,lightningDescription: null
+	,lightningLoad: function(done) {
+		kha_Assets.loadSound("lightning",function(sound) {
 			done();
 		});
 	}
-	,spawnUnload: function() {
-		this.spawn.unload();
-		this.spawn = null;
+	,lightningUnload: function() {
+		this.lightning.unload();
+		this.lightning = null;
 	}
 	,upgrade: null
 	,upgradeName: null
@@ -19273,17 +19273,17 @@ kha_SoundList.prototype = {
 		this.upgrade.unload();
 		this.upgrade = null;
 	}
-	,lightning: null
-	,lightningName: null
-	,lightningDescription: null
-	,lightningLoad: function(done) {
-		kha_Assets.loadSound("lightning",function(sound) {
+	,spawn: null
+	,spawnName: null
+	,spawnDescription: null
+	,spawnLoad: function(done) {
+		kha_Assets.loadSound("spawn",function(sound) {
 			done();
 		});
 	}
-	,lightningUnload: function() {
-		this.lightning.unload();
-		this.lightning = null;
+	,spawnUnload: function() {
+		this.spawn.unload();
+		this.spawn = null;
 	}
 	,names: null
 	,__class__: kha_SoundList
@@ -19296,10 +19296,10 @@ var kha_BlobList = function() {
 	this.SpaceMono_SIL_Open_Font_License_txtDescription = { files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"};
 	this.SpaceMono_SIL_Open_Font_License_txtName = "SpaceMono_SIL_Open_Font_License_txt";
 	this.SpaceMono_SIL_Open_Font_License_txt = null;
-	this.sprite_sheet_2_ssdDescription = { files : ["sprite_sheet_2.ssd"], type : "blob", name : "sprite_sheet_2_ssd"};
+	this.sprite_sheet_2_ssdDescription = { files : ["sprite_sheet_2_ssd"], type : "blob", name : "sprite_sheet_2_ssd"};
 	this.sprite_sheet_2_ssdName = "sprite_sheet_2_ssd";
 	this.sprite_sheet_2_ssd = null;
-	this.sprite_sheet_1_ssdDescription = { files : ["sprite_sheet_1.ssd"], type : "blob", name : "sprite_sheet_1_ssd"};
+	this.sprite_sheet_1_ssdDescription = { files : ["sprite_sheet_1_ssd"], type : "blob", name : "sprite_sheet_1_ssd"};
 	this.sprite_sheet_1_ssdName = "sprite_sheet_1_ssd";
 	this.sprite_sheet_1_ssd = null;
 };
@@ -20979,27 +20979,27 @@ kha_Shaders.init = function() {
 	var data = Reflect.field(kha_Shaders,"painter_colored_fragData");
 	var bytes = haxe_Unserializer.run(data);
 	kha_Shaders.painter_colored_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes),"painter_colored_frag");
-	var data1 = Reflect.field(kha_Shaders,"painter_image_fragData");
+	var data1 = Reflect.field(kha_Shaders,"painter_colored_vertData");
 	var bytes1 = haxe_Unserializer.run(data1);
-	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes1),"painter_image_frag");
-	var data2 = Reflect.field(kha_Shaders,"painter_colored_vertData");
+	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes1),"painter_colored_vert");
+	var data2 = Reflect.field(kha_Shaders,"painter_image_fragData");
 	var bytes2 = haxe_Unserializer.run(data2);
-	kha_Shaders.painter_colored_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes2),"painter_colored_vert");
-	var data3 = Reflect.field(kha_Shaders,"painter_text_fragData");
+	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes2),"painter_image_frag");
+	var data3 = Reflect.field(kha_Shaders,"painter_image_vertData");
 	var bytes3 = haxe_Unserializer.run(data3);
-	kha_Shaders.painter_text_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes3),"painter_text_frag");
+	kha_Shaders.painter_image_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes3),"painter_image_vert");
 	var data4 = Reflect.field(kha_Shaders,"painter_text_vertData");
 	var bytes4 = haxe_Unserializer.run(data4);
 	kha_Shaders.painter_text_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes4),"painter_text_vert");
-	var data5 = Reflect.field(kha_Shaders,"painter_image_vertData");
+	var data5 = Reflect.field(kha_Shaders,"painter_video_fragData");
 	var bytes5 = haxe_Unserializer.run(data5);
-	kha_Shaders.painter_image_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes5),"painter_image_vert");
-	var data6 = Reflect.field(kha_Shaders,"painter_video_fragData");
+	kha_Shaders.painter_video_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes5),"painter_video_frag");
+	var data6 = Reflect.field(kha_Shaders,"painter_video_vertData");
 	var bytes6 = haxe_Unserializer.run(data6);
-	kha_Shaders.painter_video_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes6),"painter_video_frag");
-	var data7 = Reflect.field(kha_Shaders,"painter_video_vertData");
+	kha_Shaders.painter_video_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes6),"painter_video_vert");
+	var data7 = Reflect.field(kha_Shaders,"painter_text_fragData");
 	var bytes7 = haxe_Unserializer.run(data7);
-	kha_Shaders.painter_video_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes7),"painter_video_vert");
+	kha_Shaders.painter_text_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes7),"painter_text_frag");
 };
 var kha_Sound = function() {
 };
@@ -21554,7 +21554,7 @@ kha_SystemImpl.loadFinished = function() {
 	if(requestAnimationFrame == null) {
 		requestAnimationFrame = $window.msRequestAnimationFrame;
 	}
-	var b = false;
+	var b = true;
 	var animate = null;
 	animate = function(timestamp) {
 		var window1 = window;
@@ -36804,10 +36804,10 @@ kha_js_graphics4_Graphics.__name__ = ["kha","js","graphics4","Graphics"];
 kha_js_graphics4_Graphics.__interfaces__ = [kha_graphics4_Graphics];
 kha_js_graphics4_Graphics.getBlendFunc = function(factor) {
 	switch(factor[1]) {
-	case 0:case 2:
-		return 0;
 	case 1:
 		return 1;
+	case 0:case 2:
+		return 0;
 	case 3:
 		return 770;
 	case 4:
@@ -40664,7 +40664,7 @@ kala_Kala.html5 = new kala_system_HTML5();
 kala_Kala._prvUpdateTime = 0;
 kala_asset_Assets.loader = new kala_asset_Loader();
 kala_asset_Assets.sheets = new kala_asset_SheetList();
-kala_asset_Assets.files = [{ files : ["Dissonant_Waltz.ogg"], type : "sound", name : "Dissonant_Waltz"},{ files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"},{ files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"},{ files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"},{ files : ["sprite_sheet_1.ssd"], type : "blob", name : "sprite_sheet_1_ssd"},{ files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"},{ files : ["sprite_sheet_2.ssd"], type : "blob", name : "sprite_sheet_2_ssd"},{ files : ["bounce.ogg"], type : "sound", name : "bounce"},{ files : ["flap.ogg"], type : "sound", name : "flap"},{ files : ["spawn.ogg"], type : "sound", name : "spawn"},{ files : ["upgrade.ogg"], type : "sound", name : "upgrade"},{ files : ["lightning.ogg"], type : "sound", name : "lightning"},{ files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"},{ files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"},{ files : ["Montserrat-Bold.ttf"], type : "font", name : "Montserrat_Bold"},{ files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"},{ inputs : [{ type : "vec4", name : "fragmentColor"}], uniforms : [], files : ["painter-colored.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_colored_frag"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-image.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_image_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-colored.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_colored_vert"},{ inputs : [{ type : "vec4", name : "fragmentColor"},{ type : "vec2", name : "texCoord"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-text.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_text_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-text.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_text_vert"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-image.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_image_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-video.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_video_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-video.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_video_vert"}];
+kala_asset_Assets.files = [{ files : ["Dissonant_Waltz.ogg"], type : "sound", name : "Dissonant_Waltz"},{ files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"},{ files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"},{ files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"},{ files : ["sprite_sheet_1_ssd"], type : "blob", name : "sprite_sheet_1_ssd"},{ files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"},{ files : ["sprite_sheet_2_ssd"], type : "blob", name : "sprite_sheet_2_ssd"},{ files : ["bounce.ogg"], type : "sound", name : "bounce"},{ files : ["flap.ogg"], type : "sound", name : "flap"},{ files : ["lightning.ogg"], type : "sound", name : "lightning"},{ files : ["upgrade.ogg"], type : "sound", name : "upgrade"},{ files : ["spawn.ogg"], type : "sound", name : "spawn"},{ files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"},{ files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"},{ files : ["Montserrat-Bold.ttf"], type : "font", name : "Montserrat_Bold"},{ files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"},{ inputs : [{ type : "vec4", name : "fragmentColor"}], uniforms : [], files : ["painter-colored.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_colored_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-colored.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_colored_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-image.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_image_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-image.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_image_vert"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-text.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_text_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-video.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_video_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-video.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_video_vert"},{ inputs : [{ type : "vec4", name : "fragmentColor"},{ type : "vec2", name : "texCoord"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-text.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_text_frag"}];
 kala_audio_Audio.groups = [];
 kala_behaviors_collision_basic_shapes_CollisionRectangle.pool = new kala_util_pool_Pool(function() {
 	return new kala_behaviors_collision_basic_shapes_CollisionRectangle();
@@ -40719,14 +40719,14 @@ kha_Scheduler.timeWarpSaveTime = 1.0;
 kha_Scheduler.DIF_COUNT = 3;
 kha_Scheduler.maxframetime = 0.5;
 kha_Scheduler.startTime = 0;
-kha_Shaders.painter_colored_fragData = "s190:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdmFyeWluZyB2ZWM0IGZyYWdtZW50Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9GcmFnRGF0YVswXSA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
-kha_Shaders.painter_image_fragData = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBtZWRpdW1wIHNhbXBsZXIyRCB0ZXg7Cgp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3IpOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
-kha_Shaders.painter_colored_vertData = "s334:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IChwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKSk7CiAgICBmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
-kha_Shaders.painter_text_fragData = "s340:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBtZWRpdW1wIHNhbXBsZXIyRCB0ZXg7Cgp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwoKdm9pZCBtYWluKCkKewogICAgZ2xfRnJhZ0RhdGFbMF0gPSB2ZWM0KGZyYWdtZW50Q29sb3IueHl6LCAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpLnggKiBmcmFnbWVudENvbG9yLncpKTsKfQoK";
-kha_Shaders.painter_text_vertData = "s439:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IChwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKSk7CiAgICB0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwogICAgZnJhZ21lbnRDb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
-kha_Shaders.painter_image_vertData = "s418:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCkpOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGNvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
-kha_Shaders.painter_video_fragData = "s444:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBtZWRpdW1wIHNhbXBsZXIyRCB0ZXg7Cgp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIHZlYzQgdGV4Y29sb3IgPSAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3IpOwogICAgdmVjMyBfMzIgPSB0ZXhjb2xvci54eXogKiBjb2xvci53OwogICAgdGV4Y29sb3IgPSB2ZWM0KF8zMi54LCBfMzIueSwgXzMyLnosIHRleGNvbG9yLncpOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB0ZXhjb2xvcjsKfQoK";
-kha_Shaders.painter_video_vertData = "s418:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgY29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb24sIDEuMCkpOwogICAgdGV4Q29vcmQgPSB0ZXhQb3NpdGlvbjsKICAgIGNvbG9yID0gdmVydGV4Q29sb3I7Cn0KCg";
+kha_Shaders.painter_colored_fragData = "s236:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4CnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0Owp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfRnJhZ0NvbG9yID0gZnJhZ21lbnRDb2xvcjsKCXJldHVybjsKfQoK";
+kha_Shaders.painter_colored_vertData = "s518:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4CnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0Owp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKYXR0cmlidXRlIHZlYzMgdmVydGV4UG9zaXRpb247CnZhcnlpbmcgdmVjNCBmcmFnbWVudENvbG9yOwphdHRyaWJ1dGUgdmVjNCB2ZXJ0ZXhDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb25bMF0sIHZlcnRleFBvc2l0aW9uWzFdLCB2ZXJ0ZXhQb3NpdGlvblsyXSwgMS4wKSk7CglmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7CglyZXR1cm47Cn0KCg";
+kha_Shaders.painter_image_fragData = "s842:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOApwcmVjaXNpb24gbWVkaXVtcCBmbG9hdDsKdW5pZm9ybSBzYW1wbGVyMkQgdGV4Owp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJdmVjNCB0ZXhjb2xvcl85OwoJdGV4Y29sb3JfOSA9ICh0ZXh0dXJlMkQodGV4LCB0ZXhDb29yZCkgKiBjb2xvcik7Cgl0ZXhjb2xvcl85ID0gdmVjNCgodmVjMyh0ZXhjb2xvcl85WzBdLCB0ZXhjb2xvcl85WzFdLCB0ZXhjb2xvcl85WzJdKSAqIGNvbG9yWzNdKVswXSwgKHZlYzModGV4Y29sb3JfOVswXSwgdGV4Y29sb3JfOVsxXSwgdGV4Y29sb3JfOVsyXSkgKiBjb2xvclszXSlbMV0sICh2ZWMzKHRleGNvbG9yXzlbMF0sIHRleGNvbG9yXzlbMV0sIHRleGNvbG9yXzlbMl0pICogY29sb3JbM10pWzJdLCB0ZXhjb2xvcl85WzNdKTsKCWdsX0ZyYWdDb2xvciA9IHRleGNvbG9yXzk7CglyZXR1cm47Cn0KCg";
+kha_Shaders.painter_image_vertData = "s628:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnVuaWZvcm0gbWF0NCBwcm9qZWN0aW9uTWF0cml4OwphdHRyaWJ1dGUgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwphdHRyaWJ1dGUgdmVjMiB0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgdmVjNCB2ZXJ0ZXhDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb25bMF0sIHZlcnRleFBvc2l0aW9uWzFdLCB2ZXJ0ZXhQb3NpdGlvblsyXSwgMS4wKSk7Cgl0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwoJY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKCXJldHVybjsKfQoK";
+kha_Shaders.painter_text_vertData = "s650:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnVuaWZvcm0gbWF0NCBwcm9qZWN0aW9uTWF0cml4OwphdHRyaWJ1dGUgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwphdHRyaWJ1dGUgdmVjMiB0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWM0IGZyYWdtZW50Q29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKCgp2b2lkIG1haW4oKQp7CglnbF9Qb3NpdGlvbiA9IChwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvblswXSwgdmVydGV4UG9zaXRpb25bMV0sIHZlcnRleFBvc2l0aW9uWzJdLCAxLjApKTsKCXRleENvb3JkID0gdGV4UG9zaXRpb247CglmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7CglyZXR1cm47Cn0KCg";
+kha_Shaders.painter_video_fragData = "s842:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOApwcmVjaXNpb24gbWVkaXVtcCBmbG9hdDsKdW5pZm9ybSBzYW1wbGVyMkQgdGV4Owp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJdmVjNCB0ZXhjb2xvcl85OwoJdGV4Y29sb3JfOSA9ICh0ZXh0dXJlMkQodGV4LCB0ZXhDb29yZCkgKiBjb2xvcik7Cgl0ZXhjb2xvcl85ID0gdmVjNCgodmVjMyh0ZXhjb2xvcl85WzBdLCB0ZXhjb2xvcl85WzFdLCB0ZXhjb2xvcl85WzJdKSAqIGNvbG9yWzNdKVswXSwgKHZlYzModGV4Y29sb3JfOVswXSwgdGV4Y29sb3JfOVsxXSwgdGV4Y29sb3JfOVsyXSkgKiBjb2xvclszXSlbMV0sICh2ZWMzKHRleGNvbG9yXzlbMF0sIHRleGNvbG9yXzlbMV0sIHRleGNvbG9yXzlbMl0pICogY29sb3JbM10pWzJdLCB0ZXhjb2xvcl85WzNdKTsKCWdsX0ZyYWdDb2xvciA9IHRleGNvbG9yXzk7CglyZXR1cm47Cn0KCg";
+kha_Shaders.painter_video_vertData = "s628:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnVuaWZvcm0gbWF0NCBwcm9qZWN0aW9uTWF0cml4OwphdHRyaWJ1dGUgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwphdHRyaWJ1dGUgdmVjMiB0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgdmVjNCB2ZXJ0ZXhDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb25bMF0sIHZlcnRleFBvc2l0aW9uWzFdLCB2ZXJ0ZXhQb3NpdGlvblsyXSwgMS4wKSk7Cgl0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwoJY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKCXJldHVybjsKfQoK";
+kha_Shaders.painter_text_fragData = "s727:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnZhcnlpbmcgdmVjNCBmcmFnbWVudENvbG9yOwp1bmlmb3JtIHNhbXBsZXIyRCB0ZXg7CnZhcnlpbmcgdmVjMiB0ZXhDb29yZDsKCgoKdm9pZCBtYWluKCkKewoJZ2xfRnJhZ0NvbG9yID0gdmVjNCh2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzBdLCB2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzFdLCB2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzJdLCAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpWzBdICogZnJhZ21lbnRDb2xvclszXSkpOwoJcmV0dXJuOwp9Cgo";
 kha_System.renderListeners = [];
 kha_System.foregroundListeners = [];
 kha_System.resumeListeners = [];
