@@ -1,17 +1,26 @@
 {"frames": [
 
 {
-	"filename": "upgrade_menu/start_button.png",
-	"frame": {"x":0,"y":0,"w":80,"h":44},
+	"filename": "audio_button/off.png",
+	"frame": {"x":0,"y":0,"w":37,"h":31},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":44},
-	"sourceSize": {"w":80,"h":44},
+	"spriteSourceSize": {"x":0,"y":0,"w":37,"h":31},
+	"sourceSize": {"w":37,"h":31},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "audio_button/on.png",
+	"frame": {"x":37,"y":0,"w":37,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":37,"h":31},
+	"sourceSize": {"w":37,"h":31},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
 	"filename": "upgrade_menu/back_button.png",
-	"frame": {"x":80,"y":0,"w":71,"h":44},
+	"frame": {"x":74,"y":0,"w":71,"h":44},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":71,"h":44},
@@ -19,8 +28,17 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
+	"filename": "upgrade_menu/start_button.png",
+	"frame": {"x":145,"y":0,"w":80,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":44},
+	"sourceSize": {"w":80,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
 	"filename": "settings_menu/volume_bar.png",
-	"frame": {"x":151,"y":0,"w":16,"h":53},
+	"frame": {"x":225,"y":0,"w":16,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":53},
@@ -29,7 +47,7 @@
 },
 {
 	"filename": "main_menu/more_game_button.png",
-	"frame": {"x":167,"y":0,"w":156,"h":56},
+	"frame": {"x":241,"y":0,"w":156,"h":56},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":156,"h":56},
@@ -38,7 +56,7 @@
 },
 {
 	"filename": "main_menu/android_badge.png",
-	"frame": {"x":323,"y":0,"w":172,"h":60},
+	"frame": {"x":397,"y":0,"w":172,"h":60},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":172,"h":60},
@@ -47,7 +65,7 @@
 },
 {
 	"filename": "settings_menu/back_button.png",
-	"frame": {"x":495,"y":0,"w":73,"h":82},
+	"frame": {"x":569,"y":0,"w":73,"h":82},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":73,"h":82},
@@ -56,7 +74,7 @@
 },
 {
 	"filename": "settings_menu/sound_icon.png",
-	"frame": {"x":568,"y":0,"w":97,"h":86},
+	"frame": {"x":642,"y":0,"w":97,"h":86},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":86},
@@ -65,7 +83,7 @@
 },
 {
 	"filename": "settings_menu/reset_button.png",
-	"frame": {"x":665,"y":0,"w":91,"h":88},
+	"frame": {"x":739,"y":0,"w":91,"h":88},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":88},
@@ -74,7 +92,7 @@
 },
 {
 	"filename": "main_menu/help_button.png",
-	"frame": {"x":756,"y":0,"w":57,"h":89},
+	"frame": {"x":830,"y":0,"w":57,"h":89},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":89},
@@ -83,7 +101,7 @@
 },
 {
 	"filename": "settings_menu/music_icon.png",
-	"frame": {"x":813,"y":0,"w":76,"h":94},
+	"frame": {"x":887,"y":0,"w":76,"h":94},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":94},
@@ -92,7 +110,7 @@
 },
 {
 	"filename": "settings_menu/vibration_button.png",
-	"frame": {"x":889,"y":0,"w":97,"h":96},
+	"frame": {"x":963,"y":0,"w":97,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":96},
@@ -101,7 +119,7 @@
 },
 {
 	"filename": "upgrade_menu/level_up_button.png",
-	"frame": {"x":986,"y":0,"w":98,"h":98},
+	"frame": {"x":1060,"y":0,"w":98,"h":98},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":98,"h":98},
@@ -110,7 +128,7 @@
 },
 {
 	"filename": "main_menu/credit_button.png",
-	"frame": {"x":1084,"y":0,"w":77,"h":102},
+	"frame": {"x":1158,"y":0,"w":77,"h":102},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":102},
@@ -119,7 +137,7 @@
 },
 {
 	"filename": "main_menu/settings_button.png",
-	"frame": {"x":1161,"y":0,"w":77,"h":102},
+	"frame": {"x":1235,"y":0,"w":77,"h":102},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":102},
@@ -128,7 +146,7 @@
 },
 {
 	"filename": "main_menu/play_button.png",
-	"frame": {"x":1238,"y":0,"w":77,"h":102},
+	"frame": {"x":1312,"y":0,"w":77,"h":102},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":102},
@@ -137,7 +155,7 @@
 },
 {
 	"filename": "main_menu/picker.png",
-	"frame": {"x":1315,"y":0,"w":108,"h":110},
+	"frame": {"x":1389,"y":0,"w":108,"h":110},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":108,"h":110},
@@ -154,7 +172,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/5.png",
+	"filename": "upgrade_menu/icons/4.png",
 	"frame": {"x":612,"y":110,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -163,7 +181,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/9.png",
+	"filename": "upgrade_menu/icons/5.png",
 	"frame": {"x":753,"y":110,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -181,7 +199,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/4.png",
+	"filename": "upgrade_menu/icons/3.png",
 	"frame": {"x":1035,"y":110,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -190,7 +208,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/8.png",
+	"filename": "upgrade_menu/icons/1.png",
 	"frame": {"x":1176,"y":110,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -199,7 +217,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/7.png",
+	"filename": "upgrade_menu/icons/9.png",
 	"frame": {"x":1317,"y":110,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -208,7 +226,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/3.png",
+	"filename": "upgrade_menu/icons/2.png",
 	"frame": {"x":1458,"y":110,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -217,7 +235,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/1.png",
+	"filename": "upgrade_menu/icons/8.png",
 	"frame": {"x":1599,"y":110,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -226,7 +244,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/0.png",
+	"filename": "upgrade_menu/icons/7.png",
 	"frame": {"x":0,"y":252,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -235,7 +253,7 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "upgrade_menu/icons/2.png",
+	"filename": "upgrade_menu/icons/0.png",
 	"frame": {"x":141,"y":252,"w":141,"h":142},
 	"rotated": false,
 	"trimmed": false,
@@ -282,10 +300,10 @@
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "sprite_sheet1.png",
+	"image": "sprite_sheet_1.png",
 	"format": "RGBA8888",
 	"size": {"w":1740,"h":1018},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:28c0fa5975cc9cc4ae159eb303cd19a5:c8f76e7d6ce71e020d6c13a076416c1b:2a6eb070877c1fade73be780e533e789$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c63e8419857f197099c53251ca5f791b:f3d9c7b00f8081a092cbbca7a814c89d:2207a3bedc7fad3b8b29b0226ac1e4ea$"
 }
 }

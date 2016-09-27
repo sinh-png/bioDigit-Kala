@@ -29,15 +29,27 @@ class EnemyD extends Enemy {
 	});
 	
 	public static inline function create(x:FastFloat, y:FastFloat):Void {
+		PlayState.instance.onScreenEnemyCount++;
+		
 		var enemy = pool.get();
 		enemy.revive();
 		enemy.setXY(x, y);
-		enemy.hp = 300;
+		enemy.hp = 150;
 		enemy.moveRandom(function() {
-			for (i in 0...6) {
+			var n = Random.int(3, 6);
+			G.sfxGroup.play(R.sounds.spawn, n / 15);
+			for (i in 0...n) {
 				enemy.createChild();
 			}
 		});
+	}
+	
+	public static inline function createRandomPos():Void {
+		switch(Random.int(0, 2)) {
+			case 0: create( -60, Random.int(0, 300));
+			case 1: create(G.width + 60, Random.int(0, 300));
+			case 2: create(Random.int(60, G.width - 60), -160);
+		}
 	}
 	
 	public function new() {
@@ -70,11 +82,10 @@ class EnemyD extends Enemy {
 		.start();
 		
 		initDeathEffect();
-	}
-	
-	override public function kill():Void {
-		super.kill();
-		dropGems(9, 0, 0);
+		
+		bodyAtkOn = false;
+		gemDropQuantity = 9;
+		isSubEnemy = false;
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {
@@ -82,6 +93,11 @@ class EnemyD extends Enemy {
 		
 		hpText.y = sprite.y;
 		mask.position.y = sprite.y + 2;
+	}
+	
+	override function put():Void {
+		super.put();
+		pool.putUnsafe(this);
 	}
 	
 	inline function createChild():Void {
@@ -93,6 +109,7 @@ class EnemyD extends Enemy {
 		);
 		child.leftTurning = Random.bool();
 		child.turningDelay = Random.int(Child.turnDelayMin, Child.turnDelayMax);
+		child.opacity = 0;
 		child.hp = 9;
 	}
 	
@@ -143,13 +160,22 @@ class Child extends Enemy {
 		playerPos = Player.instance.position;
 		
 		initDeathEffect();
+		
+		gemDropQuantity = 1;
+		isSubEnemy = true;
 	}
 	
-	override public function kill():Void {
-		super.kill();
-		dropGems(1, 0, 0);
+	override public function update(elapsed:FastFloat):Void {
+		super.update(elapsed);
+		if (opacity < 1) {
+			#if (cap_30 && !debug)
+			opacity += 0.1;
+			#else
+			opacity += 0.05;
+			#end
+		}
 	}
-	
+
 	override function updateAlive(elapsed:FastFloat):Void {
 		super.updateAlive(elapsed);
 		
@@ -160,7 +186,7 @@ class Child extends Enemy {
 	
 		if (turningDelay > 0) turningDelay -= elapsed;
 		else {
-			if (y < 300) {
+			if (y < 270) {
 				var a = Mathf.angle(x, y, playerPos.x, playerPos.y) + (leftTurning ? 360 : 0);
 				var turnSpeed = Child.turnSpeed * elapsed;
 				if (motion.velocity.angle >= a + turnSpeed) motion.velocity.angle -= turnSpeed;

@@ -5,6 +5,7 @@ import kala.math.Position;
 import kala.math.Random;
 import kala.objects.group.Group;
 import kala.objects.sprite.Sprite;
+import kala.objects.text.BasicText;
 import kha.FastFloat;
 import kha.Image;
 import states.PlayState;
@@ -22,11 +23,12 @@ class Gem extends Sprite {
 	//
 	
 	public static var playerPos:Position;
+	public static var gemText:BasicText;
 	
-	public static var myGroup:Group<Gem> = new Group<Gem>(false, function() return new Gem());
+	public static var group:Group<Gem> = new Group<Gem>(false, function() return new Gem());
 	
 	public static inline function create(x:FastFloat, y:FastFloat):Void {
-		var gem = myGroup.createAlive();
+		var gem = group.createAlive();
 		gem.setXY(x, y);
 		gem.scale.x = Random.roll();
 		gem.scale.y = Random.roll();
@@ -61,7 +63,10 @@ class Gem extends Sprite {
 			var distance = position.getDistance(playerPos);
 			if (distance < 40) {
 				kill();
-				UpgradeData.money++;
+				if (!G.tutorialPassed || PlayState.instance.tutorialState == -1) {
+					UpgradeData.money++;
+					gemText.text = "X " + UpgradeData.money;
+				}
 			} else if (distance < UpgradeData.gemCollectionDistance) {
 				var a = position.getAngle(playerPos, false);
 				angle = Mathf.deg(a);

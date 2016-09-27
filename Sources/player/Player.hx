@@ -1,11 +1,17 @@
 package player;
 
+import kala.behaviors.collision.basic.Collider;
+import kala.behaviors.collision.basic.shapes.CollisionCircle;
+import kala.behaviors.display.Flicker;
 import kala.input.Touch;
 import kala.Kala;
+import kala.objects.group.Group.GenericGroup;
 import kala.objects.sprite.Sprite;
 import kala.objects.text.BasicText;
 import kha.FastFloat;
+import states.MainMenuState;
 import states.PlayState;
+import states.UpgradeState;
 
 class Player extends Sprite {
 
@@ -21,12 +27,26 @@ class Player extends Sprite {
 	
 	//
 	
+	public var lives(default, set):Int;
+	
 	public var energyBall:EngeryBall;
+	
+	public var playStateUIGroup:GenericGroup;
 	public var chargingProcessText:BasicText;
 	
-	var chargedValue:FastFloat;
+	public var flicker:Flicker;
+	
+	public var mask:CollisionCircle;
+	var collider:Collider;
+	
+	public var webShot:Int;
+	public var charging:Bool;
+	public var chargedValue:FastFloat;
+	
 	var shootAlarm:Int;
 	var minionSpawnAlarm:Int;
+	var minionSpawned:Int;
+	var vspeed:FastFloat;
 	
 	public function new() {
 		super();
@@ -42,17 +62,87 @@ class Player extends Sprite {
 		#end
 		
 		centerOrigin();
-		position.setXBetween(0, G.width);
-		y = 414;
+		
+		collider = new Collider(this);
+		mask = collider.addCircle(position.ox, position.oy, 25);
 		
 		energyBall = new EngeryBall();
+		
+		flicker = new Flicker(this);
+		#if (cap_30 && !debug)
+		flicker.delay = 1;
+		flicker.visibleDuration = 2;
+		#else
+		flicker.delay = 2;
+		flicker.visibleDuration = 4;
+		#end
 	}
 	
 	override public function update(elapsed:FastFloat):Void {
 		super.update(elapsed);
-
-		var charging:Bool = false;
+		
+		if (lives > 0) updateAlive(elapsed);
+		else {
+			animation.play("stand");
+			
+			y += vspeed;
+			#if (cap_30 && !debug)
+			vspeed += 1;
+			angle += 16;
+			#else
+			vspeed += 0.25;
+			angle += 8;
+			#end
+			
+			energyBall.kill();
+			chargingProcessText.kill();
+			
+			if (y > G.height + height && !PlayState.instance.closing) {
+				PlayState.instance.goTo(UpgradeState.instance);
+			}
+		}
+		
+		if (!charging) if (playStateUIGroup.opacity < 1) playStateUIGroup.opacity += 0.02;
+	}
+	
+	public function onStart():Void {
+		lives = UpgradeData.startingLives;
+		position.setXBetween(0, G.width);
+		y = 414;
+		angle = 0;
+		chargedValue = 0;
+		shootAlarm = UpgradeData.shootDelay;
+		minionSpawnAlarm = 0;
+		minionSpawned = 0;
+		flicker.flickersLeft = 0;
+		energyBall.revive();
+		chargingProcessText.revive();
+		#if (cap_30 && !debug)
+		vspeed = -18;
+		#else
+		vspeed = -9;
+		#end
+	}
+	
+	public function getHit():Void {
+		if (PlayState.instance.tutorialState == -1) lives--;
+		if (lives > 0) {
+			#if (cap_30 && !debug)
+			flicker.flicker(30);
+			#else
+			flicker.flicker(60);
+			#end
+		}
+		#if (cap_30 && !debug)
+		Kala.defaultView.shake(18, 15);
+		#else
+		Kala.defaultView.shake(18, 30);
+		#end
+	}
+	
+	inline function updateAlive(elapsed:FastFloat):Void {
 		var moving:Int = 0; // -1 - moving left, 1 - moving right, 0 - not moving
+		charging = false;
 		
 		#if js
 		if (Kala.html5.mobile) {
@@ -88,12 +178,14 @@ class Player extends Sprite {
 		#end
 		
 		if (charging) {
+			if (playStateUIGroup.opacity > 0) playStateUIGroup.opacity -= 0.02;
+			
 			chargedValue += chargingSpeed;
 			if (chargedValue > 1) chargedValue = 1;
 			
 			if (chargedValue > 0.1) {
+				mask.position.y = position.oy + 14;
 				animation.play("charge");
-				
 				chargingProcessText.visible = true;
 				
 				if (chargedValue > 0.4) {
@@ -113,6 +205,8 @@ class Player extends Sprite {
 			
 			energyBall.charge(chargedValue, x);
 		} else {
+			mask.position.y = position.oy;
+			
 			if (shootAlarm > 0) shootAlarm--;
 			else {
 				shootAlarm = UpgradeData.shootDelay;
@@ -141,8 +235,9 @@ class Player extends Sprite {
 			chargingProcessText.visible = false;
 			
 			if (chargedValue > 0.4) {
-				Lightning.shoot(x);
+				Lightning.shoot(x, (chargedValue - 0.4) / 0.6);
 			} else if (chargedValue > 0.1) {
+				webShot++;
 				Web.shoot(x);
 			}
 			
@@ -161,15 +256,15 @@ class Player extends Sprite {
 		}
 		
 		if (minionSpawnAlarm > 0) minionSpawnAlarm--;
-		else {
+		else if (PlayState.instance.tutorialState == -1 || minionSpawned < 6) {
 			minionSpawnAlarm = UpgradeData.minionSpawnDelay;
 			Minion.create();
 		}
 	}
 	
-	public function restart():Void {
-		chargedValue = 0;
-		shootAlarm = UpgradeData.shootDelay;
+	function set_lives(value:Int):Int {
+		PlayState.instance.livesText.text = "X " + value;
+		return lives = value;
 	}
 	
 }

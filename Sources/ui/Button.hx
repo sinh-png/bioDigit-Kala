@@ -1,11 +1,11 @@
 package ui;
 
 import kala.behaviors.collision.transformable.shapes.CollisionPolygon;
-import kala.objects.sprite.PushSprite;
+import kala.objects.sprite.ButtonSprite;
 import kala.objects.sprite.Sprite.SpriteData;
 import kha.FastFloat;
 
-class Button extends PushSprite {
+class Button extends ButtonSprite {
 
 	public var mask:CollisionPolygon;
 	

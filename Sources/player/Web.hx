@@ -16,10 +16,10 @@ import states.PlayState;
 
 class Web extends Sprite {
 
-	public static var myGroup:Group<Web> = new Group<Web>(false, function() return new Web());
+	public static var group:Group<Web> = new Group<Web>(false, function() return new Web());
 	
 	public static inline function shoot(x:FastFloat):Void {
-		var web = myGroup.createAlive();
+		var web = group.createAlive();
 		web.spreading = false;
 		web.animation.play("shooting");
 		web.scale.set(0, 0, web.width / 2, web.height);
@@ -86,6 +86,11 @@ class Web extends Sprite {
 			for (enemy in EnemyB.childGroup) checkEnemy(enemy);
 			for (enemy in EnemyD.childGroup) checkEnemy(enemy);
 		}
+	}
+	
+	override public function kill():Void {
+		super.kill();
+		tween.cancel();
 	}
 	
 	inline function checkEnemy(enemy:Enemy):Void {

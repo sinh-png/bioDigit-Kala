@@ -30,10 +30,20 @@ class EnemyC extends Enemy {
 	});
 	
 	public static inline function create(size:Int, x:FastFloat, y:FastFloat):Void {
+		PlayState.instance.onScreenEnemyCount++;
+		
 		var enemy = pool.get();
 		enemy.revive();
 		enemy.size = size;
 		enemy.setXY(x, y);
+	}
+	
+	public static inline function createRandomPos(size):Void {
+		switch(Random.int(0, 2)) {
+			case 0: create(size, -120, Random.int(0, 300));
+			case 1: create(size, G.width + 120, Random.int(0, 300));
+			case 2: create(size, Random.int(60, G.width - 60), -120);
+		}
 	}
 	
 	//
@@ -56,19 +66,12 @@ class EnemyC extends Enemy {
 	var flipSpeed:FastFloat;
 	
 	var targeting:Bool;
-	var attacking:Bool;
 	var attackAlarm:Int;
-	
-	var player:Player;
 	
 	public function new() {
 		super();
 		
-		#if (cap_30 && !debug)
-		sprite.loadSpriteData(R.enemyC, 4).animation.play();
-		#else
-		sprite.loadSpriteData(R.enemyC, 2).animation.play();
-		#end
+		sprite.loadSpriteData(R.enemyC, 0).animation.play();
 		animation = sprite.animation;
 		
 		setOrigin(halfWidth = sprite.width / 2, (halfHeight = sprite.height / 2) - 25);
@@ -77,24 +80,28 @@ class EnemyC extends Enemy {
 		hpText.setXY(halfWidth - 2, scale.oy + 2);
 		hpText.size = 40;
 		
-		player = PlayState.instance.player;
-		
 		initDeathEffect();
+		player = PlayState.instance.player;
+		isSubEnemy = false;
 	}
 	
 	override public function kill():Void {
+		gemDropQuantity = Std.int(size * 3);
 		super.kill();
-		dropGems(Std.int(size * 3), 0, 0);
 	}
 	
-	override function put():Void {
-		pool.putUnsafe(this);
+	override public function revive():Void {
+		super.revive();
+		targeting = bodyAtkOn = false;
+		flapped = false;
+		scale.y = 1;
+		endAttacking();
 	}
 	
 	override function updateAlive(elapsed:FastFloat):Void {
 		super.updateAlive(elapsed);
 		
-		if (attacking) {
+		if (bodyAtkOn) {
 			if (scale.y > -baseScale) scale.y -= flipSpeed * elapsed;
 			else {
 				if (scale.y < -baseScale) scale.y = -baseScale;
@@ -113,18 +120,18 @@ class EnemyC extends Enemy {
 				}
 			}
 		} else if (targeting) {
-			attacking = true;
+			bodyAtkOn = true;
 			
 			if (x - player.x > 15) {
-				attacking = false;
+				bodyAtkOn = false;
 				x -= maxHSpeed * elapsed;
 			} else if (x - player.x < -15) {
-				attacking = false;
+				bodyAtkOn = false;
 				x += maxHSpeed * elapsed;
 			}
 	
 			if (y > 100) {
-				attacking = false;
+				bodyAtkOn = false;
 				vline = -100;
 			}
 		} else {
@@ -162,6 +169,8 @@ class EnemyC extends Enemy {
 			}
 			
 			if (animation.frame == 2 || animation.frame == 5) {
+				if (!flapped) G.sfxGroup.play(R.sounds.flap, size / 5);
+				
 				if (!flapped) {
 					vspeed = -flapPower;
 					flapped = true;
@@ -173,6 +182,11 @@ class EnemyC extends Enemy {
 			y += vspeed * baseScale * elapsed;
 			vspeed += vaccel * elapsed;
 		}
+	}
+	
+	override function put():Void {
+		super.put();
+		pool.putUnsafe(this);
 	}
 	
 	inline function randomHSpeed():Void {
@@ -201,13 +215,13 @@ class EnemyC extends Enemy {
 	}
 	
 	inline function endAttacking():Void {
-		targeting = attacking = false;
+		targeting = bodyAtkOn = false;
 		#if (cap_30 && !debug)
 		attackAlarm = Random.int(300, 600);
 		#else
 		attackAlarm = Random.int(600, 1200);
 		#end
-		
+		animation.delay = 0;
 		randomVLine();
 	}
 	
@@ -221,11 +235,8 @@ class EnemyC extends Enemy {
 		
 		flapPower = baseFlapPower * baseScale;
 		vaccel = baseVAccel * baseScale;
-		flapped = false;
 		
 		flipSpeed = baseFlipSpeed * baseScale;
-		
-		endAttacking();
 		
 		set_hp(switch(value) {
 			case 1: 50;

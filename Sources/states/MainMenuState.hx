@@ -5,7 +5,7 @@ import kala.behaviors.tween.Tween;
 import kala.Kala;
 import kala.objects.group.Group;
 import kala.objects.group.Group.GenericGroup;
-import kala.objects.sprite.PushSprite;
+import kala.objects.sprite.ButtonSprite;
 import kala.objects.sprite.Sprite;
 import ui.Button;
 
@@ -25,14 +25,14 @@ class MainMenuState extends GenericGroup {
 	var helpButton:Button;
 	var settingsButton:Button;
 	var creditButton:Button;
-	var moreGamesButton:Button;
+	var androidButton:Button;
 	
 	var picker:Sprite;
 	
 	public function new() {
 		super();
 	
-		onFirstFrame.notify(onStart);
+		onFirstFrame.notify(onStartHandle);
 		
 		tween = new Tween(this);
 		
@@ -50,45 +50,45 @@ class MainMenuState extends GenericGroup {
 		
 		playButton = new Button("play", R.sheets.sprite_sheet_1.get("main_menu/play_button.png", R.images.sprite_sheet_1), true);
 		playButton.mask.scale.set(0.8, 0.9);
-		playButton.onOver.notify(onButtonHovered);
-		playButton.onOut.notify(onButtonOut);
-		playButton.onRelease.notify(onButtonRelease);
+		playButton.onOver.notify(onButtonHoveredHandle);
+		playButton.onOut.notify(onButtonOutHandle);
+		playButton.onRelease.notify(onButtonReleaseHandle);
 		buttonsGroup.add(playButton);
 		
 		helpButton = new Button("help", R.sheets.sprite_sheet_1.get("main_menu/help_button.png", R.images.sprite_sheet_1), true);
-		helpButton.onOver.notify(onButtonHovered);
-		helpButton.onOut.notify(onButtonOut);
-		helpButton.onRelease.notify(onButtonRelease);
+		helpButton.onOver.notify(onButtonHoveredHandle);
+		helpButton.onOut.notify(onButtonOutHandle);
+		helpButton.onRelease.notify(onButtonReleaseHandle);
 		buttonsGroup.add(helpButton);
 		
 		settingsButton = new Button("settings", R.sheets.sprite_sheet_1.get("main_menu/settings_button.png", R.images.sprite_sheet_1), true);
-		settingsButton.onOver.notify(onButtonHovered);
-		settingsButton.onOut.notify(onButtonOut);
-		settingsButton.onRelease.notify(onButtonRelease);
+		settingsButton.onOver.notify(onButtonHoveredHandle);
+		settingsButton.onOut.notify(onButtonOutHandle);
+		settingsButton.onRelease.notify(onButtonReleaseHandle);
 		buttonsGroup.add(settingsButton);
 		
 		creditButton = new Button("credit", R.sheets.sprite_sheet_1.get("main_menu/credit_button.png", R.images.sprite_sheet_1), true);
 		creditButton.mask.scale.set(0.9, 0.95);
-		creditButton.onOver.notify(onButtonHovered);
-		creditButton.onOut.notify(onButtonOut);
-		creditButton.onRelease.notify(onButtonRelease);
+		creditButton.onOver.notify(onButtonHoveredHandle);
+		creditButton.onOut.notify(onButtonOutHandle);
+		creditButton.onRelease.notify(onButtonReleaseHandle);
 		buttonsGroup.add(creditButton);
 		
-		moreGamesButton = new Button("moregames", R.sheets.sprite_sheet_1.get("main_menu/more_game_button.png", R.images.sprite_sheet_1), true);
-		moreGamesButton.centerTransformation();
-		moreGamesButton.antialiasing = true;
-		moreGamesButton.onOver.notify(onButtonHovered);
-		moreGamesButton.onOut.notify(onButtonOut);
-		moreGamesButton.onRelease.notify(onButtonRelease);
-		buttonsGroup.add(moreGamesButton);
+		androidButton = new Button("android", R.sheets.sprite_sheet_1.get("main_menu/android_badge.png", R.images.sprite_sheet_1), true);
+		androidButton.centerTransformation();
+		androidButton.antialiasing = true;
+		androidButton.onOver.notify(onButtonHoveredHandle);
+		androidButton.onOut.notify(onButtonOutHandle);
+		androidButton.onRelease.notify(onButtonReleaseHandle);
+		buttonsGroup.add(androidButton);
 		
 		playButton.position.setXBetween(0, 320, 0);
 		helpButton.position.setXBetween(0, 320, Std.int(100 / 3));
 		settingsButton.position.setXBetween(0, 320, Std.int(100 / 3 * 2));
 		creditButton.position.setXBetween(0, 320, 100);
 		
-		moreGamesButton.position.setXBetween(0, 320);
-		moreGamesButton.y = playButton.height + 30;
+		androidButton.position.setXBetween(0, 320);
+		androidButton.y = playButton.height + 30;
 		
 		picker = new Sprite().loadSpriteData(R.sheets.sprite_sheet_1.get("main_menu/picker.png", R.images.sprite_sheet_1));
 		picker.centerOrigin();
@@ -96,7 +96,7 @@ class MainMenuState extends GenericGroup {
 		buttonsGroup.add(picker);
 	}
 	
-	function onStart(_):Void {
+	function onStartHandle(_):Void {
 		Kala.updateRate = 60;
 		
 		tween.get(Ease.sineOut)
@@ -106,51 +106,58 @@ class MainMenuState extends GenericGroup {
 			.endBatch()
 			.call(function(_) buttonsGroup.active = true)
 		.start();
+		
+		G.audioButton.show();
 	}
 	
-	function onButtonHovered(button:PushSprite):Void {
-		if (button.data == "moregames") moreGamesButton.scale.setXY(1.2, 1.2);
-		else {
-			picker.visible = true;
+	function onButtonHoveredHandle(button:ButtonSprite):Void {
+		if (button.data == "android") return;
+		
+		picker.visible = true;
 			
-			switch(button.data) {
-				case "play": picker.setXY(playButton.x - 10, playButton.y + 24);
-				case "help": picker.setXY(helpButton.x, helpButton.y + 21);
-				case "settings": picker.setXY(settingsButton.x - 2, settingsButton.y + 33);
-				case "credit": picker.setXY(creditButton.x - 6, creditButton.y + 25);
-			}
+		switch(button.data) {
+			case "play": picker.setXY(playButton.x - 10, playButton.y + 24);
+			case "help": picker.setXY(helpButton.x, helpButton.y + 21);
+			case "settings": picker.setXY(settingsButton.x - 2, settingsButton.y + 33);
+			case "credit": picker.setXY(creditButton.x - 6, creditButton.y + 25);
 		}
 	}
 	
-	function onButtonOut(button:PushSprite):Void {
-		if (button.data == "moregames") moreGamesButton.scale.setXY(1, 1);
-		else picker.visible = false;
+	function onButtonOutHandle(button:ButtonSprite):Void {
+		if (button.data == "android") return;
+		picker.visible = false;
 	}
 	
-	function onButtonRelease(button:PushSprite, _):Void {
+	function onButtonReleaseHandle(button:ButtonSprite, _):Void {
 		switch(button.data) {
 			case "play": play();
-			case "help": openInstruction();
+			case "help": startTutorial();
 			case "settings": openSettings();
 			case "credit": openCredit();
-			case "moregames":  Kala.openURL("http://yourwebsite.abc");
+			case "android":  Kala.openURL("https://play.google.com/store/apps/details?id=me.haza.biodigit&hl=en");
 		}
 	}
 	
 	function play():Void {
+		if (G.tutorialPassed) {
+			close(function() G.switchState(UpgradeState.instance));
+		} else {
+			startTutorial();
+		}
+	}
+	
+	function startTutorial():Void {
+		UpgradeData.update([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+		PlayState.instance.tutorialState = 0;
 		close(function() G.switchState(PlayState.instance));
 	}
 	
-	function openInstruction():Void {
-		
-	}
-	
 	function openSettings():Void {
-		
+		close(function() G.switchState(SettingMenuState.instance));
 	}
 	
 	function openCredit():Void {
-		
+		close(function() G.switchState(CreditState.instance));
 	}
 	
 	function close(cb:Void->Void):Void {

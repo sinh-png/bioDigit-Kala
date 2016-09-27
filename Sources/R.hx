@@ -5,6 +5,7 @@ import kala.asset.Assets.SheetList;
 import kala.objects.sprite.Sprite.SpriteData;
 import kha.Assets.FontList;
 import kha.Assets.ImageList;
+import kha.Assets.SoundList;
 
 /**
  * Used to store sprite data & assets. 
@@ -13,6 +14,7 @@ class R {
 
 	public static var sheets:SheetList;
 	public static var images:ImageList;
+	public static var sounds:SoundList;
 	public static var fonts:FontList;
 	
 	public static var playerChildRunning:SpriteData;
@@ -49,9 +51,13 @@ class R {
 	
 	public static var gem:SpriteData;
 	
+	static var uncompressedSoundCount:Int = 0;
+	static var onAllSoundsUncompressedCB:Void->Void;
+	
 	public static function init():Void {
 		sheets = Assets.sheets;
 		images = Assets.images;
+		sounds = Assets.sounds;
 		fonts = Assets.fonts;
 		
 		playerChildRunning = sheets.sprite_sheet_2.get("player/mini/run/", images.sprite_sheet_2);
@@ -87,7 +93,24 @@ class R {
 		upgradeItem6 = sheets.sprite_sheet_1.get("upgrade_menu/icons/6.png", images.sprite_sheet_1);
 		upgradeItem7 = sheets.sprite_sheet_1.get("upgrade_menu/icons/7.png", images.sprite_sheet_1);
 		upgradeItem8 = sheets.sprite_sheet_1.get("upgrade_menu/icons/8.png", images.sprite_sheet_1);
-		upgradeItem9 = sheets.sprite_sheet_1.get("upgrade_menu/icons/9.png", images.sprite_sheet_1);	
+		upgradeItem9 = sheets.sprite_sheet_1.get("upgrade_menu/icons/9.png", images.sprite_sheet_1);
+	}
+	
+	public static function uncompressSounds(onCompleteCB:Void->Void):Void {
+		onAllSoundsUncompressedCB = onCompleteCB;
+		R.sounds.Dissonant_Waltz.uncompress(onSoundUncompressed);
+		R.sounds.bounce.uncompress(onSoundUncompressed);
+		R.sounds.flap.uncompress(onSoundUncompressed);
+		R.sounds.lightning.uncompress(onSoundUncompressed);
+		R.sounds.upgrade.uncompress(onSoundUncompressed);
+		R.sounds.spawn.uncompress(onSoundUncompressed);
+	}
+	
+	static function onSoundUncompressed():Void {
+		uncompressedSoundCount++;
+		if (uncompressedSoundCount == 1) {
+			onAllSoundsUncompressedCB();
+		}
 	}
 
 }

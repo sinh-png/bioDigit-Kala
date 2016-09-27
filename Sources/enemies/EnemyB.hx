@@ -3,6 +3,7 @@ package enemies;
 import kala.behaviors.motion.VelocityMotion;
 import kala.behaviors.tween.Ease;
 import kala.behaviors.tween.Tween;
+import kala.math.Random;
 import kala.objects.group.Group;
 import kala.util.pool.Pool;
 import kha.FastFloat;
@@ -57,16 +58,29 @@ class EnemyB extends Enemy {
 	});
 	
 	public static inline function create(x:FastFloat, y:FastFloat):Void {
+		PlayState.instance.onScreenEnemyCount++;
+		
 		var enemy = pool.get();
 		enemy.revive();
 		enemy.setXY(x, y);
 		enemy.scale.setXY(1, 1);
 		enemy.hp = 200;
+		enemy.bodyAtkOn = false;
+		enemy.isSubEnemy = false;
 		enemy.moveRandom(function() {
+			G.sfxGroup.play(R.sounds.spawn, 0.4);
 			for (i in 0...6) {
 				enemy.createChild(60 * i);
 			}
 		});
+	}
+	
+	public static inline function createRandomPos():Void {
+		switch(Random.int(0, 2)) {
+			case 0: create( -60, Random.int(0, 300));
+			case 1: create(G.width + 60, Random.int(0, 300));
+			case 2: create(Random.int(60, G.width - 60), -60);
+		}
 	}
 	
 	//
@@ -102,8 +116,19 @@ class EnemyB extends Enemy {
 	}
 	
 	override public function kill():Void {
+		if (scale.x == 1) {
+			gemDropQuantity = 5;
+		} else {
+			motion.velocity.speed = 0;
+			gemDropQuantity = 1;
+		}
+		
 		super.kill();
-		dropGems(scale.x == 1 ? 5 : 1, 0, 0);
+	}
+	
+	override function put():Void {
+		super.put();
+		if (scale.x == 1) pool.putUnsafe(this);
 	}
 	
 	inline function createChild(angle:FastFloat):Void {
@@ -112,6 +137,8 @@ class EnemyB extends Enemy {
 		child.hp = 20;
 		child.motion.velocity.setAngleSpeed(angle, 5);
 		child.motion.turnSpeed = 0;
+		child.bodyAtkOn = true;
+		child.isSubEnemy = true;
 	}
 
 }

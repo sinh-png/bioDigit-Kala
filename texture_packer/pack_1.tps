@@ -147,7 +147,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../Assets/sprite_sheet1.json</filename>
+                <filename>../Assets/sprite_sheet_1.ssd</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -194,6 +194,8 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">images/pack_1/audio_button/off.png</key>
+            <key type="filename">images/pack_1/audio_button/on.png</key>
             <key type="filename">images/pack_1/background/foreground.png</key>
             <key type="filename">images/pack_1/background/normal.jpg</key>
             <key type="filename">images/pack_1/main_menu/android_badge.png</key>

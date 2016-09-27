@@ -1,5 +1,6 @@
 package states;
 
+import kala.audio.Audio;
 import kala.behaviors.tween.Ease;
 import kala.behaviors.tween.Tween;
 import kala.objects.group.Group.GenericGroup;
@@ -45,7 +46,10 @@ class SpringRollSplash extends GenericGroup {
 	}
 	
 	function onMainMenuStarted(_):Void {
+		G.bgmChannel = Audio.play(R.sounds.Dissonant_Waltz, 1, true);
 		MainMenuState.instance.onFirstFrame.remove(onMainMenuStarted);
+		G.init();
+		Save.load();
 		destroy();
 	}
 	

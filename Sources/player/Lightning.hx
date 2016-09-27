@@ -1,5 +1,6 @@
 package player;
 
+import enemies.Boss;
 import enemies.Enemy;
 import enemies.EnemyB;
 import enemies.EnemyD;
@@ -14,24 +15,34 @@ import states.PlayState;
 
 class Lightning extends Sprite {
 
-	public static var mainGroup:Group<Lightning> = new Group<Lightning>(false, function() return new Lightning());
+	public static var group:Group<Lightning> = new Group<Lightning>(false, function() return new Lightning());
 	
-	public static inline function shoot(x:FastFloat, power:FastFloat = 0):Void {
-		var lightning = mainGroup.createAlive();
+	public static inline function shoot(x:FastFloat, bonus:FastFloat):Void {
+		var lightning = group.createAlive();
 		
 		lightning.x = x;
 		lightning.scale.x = 0;
 		
 		#if (cap_30 && !debug)
 		lightning.tween.get()
-			.tween(lightning.scale, { x: Random.roll() * (0.4 + power * 0.6) }, 20, Ease.elasticOut)
+			.wait(2)
+			.call(function(_) G.sfxGroup.play(R.sounds.lightning, (bonus + 1) / 2))
+		.start();
+		
+		lightning.tween.get()
+			.tween(lightning.scale, { x: Random.roll() * (0.4 + bonus * 0.6) }, 20, Ease.elasticOut)
 			.wait(10)
 			.tween(lightning.scale, { x: 0 }, 30, Ease.elasticInOut)
 			.call(function(_) lightning.kill())
 		.start();
 		#else
 		lightning.tween.get()
-			.tween(lightning.scale, { x: Random.roll() * (0.4 + power * 0.6) }, 40, Ease.elasticOut)
+			.wait(4)
+			.call(function(_) G.sfxGroup.play(R.sounds.lightning, (bonus + 1) / 2))
+		.start();
+		
+		lightning.tween.get()
+			.tween(lightning.scale, { x: Random.roll() * (0.4 + bonus * 0.6) }, 40, Ease.elasticOut)
 			.wait(20)
 			.tween(lightning.scale, { x: 0 }, 30, Ease.elasticInOut)
 			.call(function(_) lightning.kill())
@@ -43,6 +54,7 @@ class Lightning extends Sprite {
 	
 	var tween:Tween;
 	var halfWidth:FastFloat;
+	var boss:Boss;
 	
 	public function new() {
 		super();
@@ -57,6 +69,13 @@ class Lightning extends Sprite {
 		position.oy = 10;
 		
 		tween = new Tween(this);
+		
+		boss = PlayState.instance.boss;
+	}
+	
+	override public function kill():Void {
+		super.kill();
+		tween.cancel();
 	}
 	
 	override public function update(elapsed:FastFloat):Void {
@@ -66,21 +85,23 @@ class Lightning extends Sprite {
 		var rightX = x + scaledHalfHitWidth;
 		
 		for (enemy in PlayState.instance.enemyGroup) {
-			if (!enemy.alive || !enemy.collider.available) continue;
+			if (enemy.killed || !enemy.collider.available) continue;
 			testHit(enemy, absScaleX, leftX, rightX);
 		}
 		
 		for (enemy in EnemyB.childGroup) {
-			if (!enemy.alive || !enemy.collider.available) continue;
+			if (enemy.killed || !enemy.collider.available) continue;
 			testHit(enemy, absScaleX, leftX, rightX);
 		}
 		
 		for (enemy in EnemyD.childGroup) {
-			if (!enemy.sprite.alive || !enemy.collider.available) continue;
+			if (enemy.killed|| !enemy.collider.available) continue;
 			testHit(enemy, absScaleX, leftX, rightX);
 		}
 		
-		if (PlayState.instance.boss.alive) PlayState.instance.boss.hp -= 1 * absScaleX;
+		if (boss.alive && !boss.deathEffect.alive) {
+			boss.hp -= UpgradeData.lightningDMG * absScaleX;
+		}
 	}
 	
 	inline function testHit(enemy:Enemy, absScaleX:FastFloat, leftX:FastFloat, rightX:FastFloat):Void {

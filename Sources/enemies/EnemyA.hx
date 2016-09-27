@@ -1,6 +1,7 @@
 package enemies;
 
 import kala.DrawingData;
+import kala.math.Random;
 import kala.util.pool.Pool;
 import kha.FastFloat;
 import states.PlayState;
@@ -26,11 +27,19 @@ class EnemyA extends Enemy {
 	});
 	
 	public static inline function create(size:Int, x:FastFloat, y:FastFloat):EnemyA {
+		PlayState.instance.onScreenEnemyCount++;
+		
 		var enemy = pool.get();
 		enemy.revive();
 		enemy.size = size;
 		enemy.setXY(x, y);
+		
 		return enemy;
+	}
+	
+	public static inline function createRandomPos(size:Int):Void {
+		if (Random.bool()) create(size, -140, Random.int(0, 200));
+		else create(size, G.width + 140, Random.int(0, 200));
 	}
 	
 	//
@@ -47,6 +56,7 @@ class EnemyA extends Enemy {
 	
 	public function new() {
 		super();
+		
 		sprite.loadSpriteData(R.enemyA);
 		addCircleMask(
 			halfWidth = scale.ox = position.ox = sprite.width / 2,
@@ -54,6 +64,9 @@ class EnemyA extends Enemy {
 			baseRadius = (sprite.height - 90) / 2
 		);
 		initDeathEffect();
+		
+		gemDropQuantity = 5;
+		isSubEnemy = false;
 	}
 	
 	override public function revive():Void {
@@ -69,13 +82,14 @@ class EnemyA extends Enemy {
 			originY = (sprite.height - 90) * baseScale;
 			hspeed = 0;
 		} else {
-			dropGems(5, 0, (-position.oy + halfHeight) * baseScale);
+			gemDropY = ( -position.oy + halfHeight) * baseScale;
 			super.kill();
 		}
 		
 	}
 	
 	override function put():Void {
+		super.put();
 		pool.putUnsafe(this);
 	}
 	
@@ -109,6 +123,7 @@ class EnemyA extends Enemy {
 		}
 		
 		if (y > 400 && vspeed > 0) {
+			G.sfxGroup.play(R.sounds.bounce, size / 5);
 			scale.y *= 0.8;
 			vspeed = bouncingSpeed;
 		} else {

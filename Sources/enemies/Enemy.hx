@@ -11,6 +11,9 @@ import kala.objects.sprite.Sprite;
 import kala.objects.text.BasicText;
 import kha.FastFloat;
 import player.Bullet;
+import player.Minion;
+import player.Player;
+import states.PlayState;
 
 class Enemy extends GenericGroup {
 
@@ -22,19 +25,32 @@ class Enemy extends GenericGroup {
 	
 	//
 	
+	public var bodyAtkOn:Bool = true;
+	
 	public var collider:Collider;
 	public var mask:CollisionCircle;
 	
 	public var hp(default, set):FastFloat;
 	
 	public var sprite:Sprite;
-	var hpText:BasicText;
-	var deathEffect:Sprite;
+	public var hpText:BasicText;
+	public var deathEffect:Sprite;
+	
+	public var killed(get, never):Bool;
 	
 	var tween:Tween;
+	var moveRandomTimeline:TweenTimeline;
 	
 	var halfWidth:FastFloat;
 	var halfHeight:FastFloat;
+	
+	var gemDropQuantity:Int;
+	var gemDropX:FastFloat = 0;
+	var gemDropY:FastFloat = 0;
+	
+	var player:Player;
+	
+	var isSubEnemy:Bool;
 	
 	public function new() {
 		super(true);
@@ -51,6 +67,8 @@ class Enemy extends GenericGroup {
 		
 		collider = new Collider(this);
 		tween = new Tween(this);
+		
+		if (PlayState.instance != null) player = PlayState.instance.player;
 	}
 	
 	override public function revive():Void {
@@ -62,6 +80,8 @@ class Enemy extends GenericGroup {
 	}
 	
 	override public function kill():Void {
+		dropGems(gemDropQuantity, gemDropX, gemDropY);
+		
 		sprite.kill();
 		hpText.kill();
 		mask.active = false;
@@ -78,19 +98,29 @@ class Enemy extends GenericGroup {
 			.endBatch()
 			.call(function(timeline) {
 				timeline.cancel();
-				alive = false;
-				deathEffect.kill();
 				put();
 			})
 		.start();
+		
+		if (!isSubEnemy) {
+			PlayState.instance.onScreenEnemyCount--;
+			if (!PlayState.instance.boss.alive) {
+				PlayState.instance.maxOnScreenEnemy += 1 / PlayState.instance.maxOnScreenEnemy;
+				PlayState.instance.killsLeftUntilBoss--;
+			}
+		}
 	}
 	
 	override public function update(elapsed:FastFloat):Void {
 		super.update(elapsed);
-		
-		if (sprite.alive) updateAlive(elapsed);
-	
+		if (!deathEffect.alive) updateAlive(elapsed);
 		timeScale = 1;
+	}
+	
+	public function put():Void {
+		alive = false;
+		deathEffect.kill();
+		if (moveRandomTimeline != null) moveRandomTimeline.cancel();
 	}
 	
 	inline function moveRandom(actionCB:Void->Void):Void {
@@ -101,7 +131,8 @@ class Enemy extends GenericGroup {
 		#else
 		var t = Mathf.distance(this.x, this.y, x, y) / Random.float(0.25, 0.5);
 		#end
-		tween.get()
+		moveRandomTimeline = tween.get();
+		moveRandomTimeline
 			.tween(this, { x: x, y: y }, t, Ease.sineInOut)
 			.call(function(_) actionCB())
 			#if (cap_30 && !debug)
@@ -113,27 +144,35 @@ class Enemy extends GenericGroup {
 		.start();
 	}
 	
-	function put():Void {
-		
-	}
-	
 	function updateAlive(elapsed:FastFloat):Void {
 		for (bullet in Bullet.mainGroup) {
-			if (bullet.vspeed < 0) {
-				if (collider.available && mask.testRect(bullet.mask)) {
-					hp--;
+			if (bullet.alive && bullet.vspeed < 0) {
+				if (mask.testRect(bullet.mask)) {
+					hp -= 2;
 					bullet.kill();
 				}
 			}	
 		}
 		
 		for (bullet in Bullet.minionGroup) {
-			if (bullet.vspeed < 0) {
-				if (collider.available && mask.testRect(bullet.mask)) {
-					hp--;
+			if (bullet.alive && bullet.vspeed < 0) {
+				if (mask.testRect(bullet.mask)) {
+					hp -= 2;
 					bullet.kill();
 				}
 			}	
+		}
+		
+		if (bodyAtkOn) {
+			for (minion in Minion.group) {
+				if (minion.alive && minion.lives > 0 && mask.testCircle(minion.mask)) {
+					minion.getHit();
+				}
+			}
+		
+			if (player.lives > 0 && player.flicker.flickersLeft == 0 && mask.testCircle(player.mask)) {
+				player.getHit();
+			}
 		}
 	}
 
@@ -151,8 +190,11 @@ class Enemy extends GenericGroup {
 		deathEffect.position.setOrigin(sprite.position.ox, sprite.position.oy);
 	}
 	
-	inline function dropGems(quantity:Int, offsetX:FastFloat = 0, offsetY:FastFloat = 0):Void {
-		for (i in 0...Math.round(quantity * UpgradeData.gemDropFactor)) Gem.create(x + offsetX, y + offsetY);
+	inline function dropGems(quantity:Int, offsetX:FastFloat, offsetY:FastFloat):Void {
+		if (PlayState.instance.tutorialState == 5) return;
+		for (i in 0...Math.round(quantity * UpgradeData.gemDropFactor)) {
+			Gem.create(x + offsetX, y + offsetY);
+		}
 	}
 	
 	function set_hp(value:FastFloat):FastFloat {
@@ -162,7 +204,7 @@ class Enemy extends GenericGroup {
 		value = Std.int(value);
 		
 		if (value <= 0) {
-			value = 0;
+			hp = value = 0;
 			kill();
 		}
 		
@@ -170,6 +212,10 @@ class Enemy extends GenericGroup {
 		hpText.position.setOrigin(hpText.width / 2, hpText.height / 2);
 	
 		return hp;
+	}
+	
+	function get_killed():Bool {
+		return !alive || deathEffect.alive;
 	}
 	
 }

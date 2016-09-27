@@ -2,11 +2,13 @@ package states;
 
 import kala.asset.Assets;
 import kala.asset.Loader;
+import kala.debug.Debug;
 import kala.Kala;
 import kala.objects.group.Group;
 import kala.objects.sprite.Sprite;
 import kala.objects.text.Text;
 import kala.objects.text.TextAlign;
+import ui.AudioButton;
 
 class Preloader extends GenericGroup {
 
@@ -19,7 +21,7 @@ class Preloader extends GenericGroup {
 		
 		loader = Assets.loader;
 		loader
-			.queueFont(Assets.fonts.fontName)
+			.queueFont(Assets.fonts.Montserrat_BoldName)
 			.queueImage(Assets.images.background_blurName)
 			.queueAll()
 		.load(process);
@@ -57,18 +59,51 @@ class Preloader extends GenericGroup {
 	}
 	
 	function startGame():Void {
-		R.init();
+		text.text = "Preparing resources...";
 		
-		MainMenuState.instance = new MainMenuState();
+		R.init();
+		R.uncompressSounds(function() {
+			MainMenuState.instance = new MainMenuState();
+			UpgradeState.instance = new UpgradeState();
+			PlayState.instance = new PlayState();
+			SettingMenuState.instance = new SettingMenuState();
+			CreditState.instance = new CreditState();
+			
+			G.audioButton = new AudioButton();
+			Kala.world.add(G.audioButton);
+			
+			//G.switchState(CreditState.instance);
+			//G.switchState(UpgradeState.instance);
+			//G.switchState(PlayState.instance);
+			//G.switchState(MainMenuState.instance);
+			//G.switchState(SettingMenu.instance);
+			G.switchState(new SpringRollSplash());
+			
+			destroy();
+		});
+		
+		/*MainMenuState.instance = new MainMenuState();
 		UpgradeState.instance = new UpgradeState();
 		PlayState.instance = new PlayState();
+		SettingMenuState.instance = new SettingMenuState();
+		CreditState.instance = new CreditState();
 		
-		G.switchState(UpgradeState.instance);
+		G.audioButton = new AudioButton();
+		Kala.world.add(G.audioButton);
+		
+		G.init();
+		Save.load();
+		
+		//UpgradeData.update();
+		
+		//G.switchState(CreditState.instance);
+		//G.switchState(UpgradeState.instance);
 		//G.switchState(PlayState.instance);
-		//G.switchState(MainMenuState.instance);
+		G.switchState(MainMenuState.instance);
 		//G.switchState(new SpringRollSplash());
-		
-		destroy();
+		//G.switchState(SettingMenu.instance);
+				
+		destroy();*/
 	}
 	
 }

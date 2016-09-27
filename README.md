@@ -32,9 +32,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-The art assets are belonged to [Dinh Quoc Nam](https://twitter.com/DINHQUOCNAM), you will need to personally ask for his permission if you want to use the arts outside of learning & prototying purposes.
-
-The fonts are under public domain.
-
-Other assets like music, sound effects added into the project in the future will be credited to their respected authors with the licenses they are under. 

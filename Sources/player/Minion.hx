@@ -19,13 +19,18 @@ class Minion extends Sprite {
 	static inline var lightningDelay = 240;
 	#end
 	
-	public static var myGroup:Group<Minion> = new Group<Minion>(false, function() return new Minion());
+	public static var group:Group<Minion> = new Group<Minion>(false, function() return new Minion());
 	
 	public static inline function create():Void {
-		var child = myGroup.createAlive();
+		var child = group.createAlive();
 	}
 	
 	//
+	
+	public var lives:Int;
+	
+	public var mask:CollisionCircle;
+	var collider:Collider;
 	
 	var moveAlarm:Int;
 	var dx:FastFloat;
@@ -34,8 +39,9 @@ class Minion extends Sprite {
 	var shootAlarm:Int;
 	var lightningAlarm:Int;
 	
-	var collider:Collider;
-	var mask:CollisionCircle;
+	var vspeed:FastFloat;
+	
+	var hitDelayAlarm:Int;
 	
 	public function new() {
 		super();
@@ -61,12 +67,35 @@ class Minion extends Sprite {
 	override public function revive():Void {
 		super.revive();
 		setXY(playerPos.x, playerPos.y);
+		lives = UpgradeData.minionStartingLives;
 		moveAlarm = 0;
 		shootAlarm = UpgradeData.shootDelay;
 		lightningAlarm = lightningDelay;
+		angle = 0;
+		hitDelayAlarm = 0;
+		#if (cap_30 && !debug)
+		vspeed = -10;
+		#else
+		vspeed = -5;
+		#end
 	}
 	
 	override public function update(elapsed:FastFloat):Void {
+		if (lives == 0) {
+			y += vspeed;
+			#if (cap_30 && !debug)
+			vspeed += 1;
+			angle += 16;
+			#else
+			vspeed += 0.25;
+			angle += 8;
+			#end
+			if (y > G.height + height) kill();
+			return;
+		}
+		
+		if (hitDelayAlarm > 0) hitDelayAlarm--;
+		
 		if (shootAlarm > 0) shootAlarm--;
 		else {
 			shootAlarm = UpgradeData.minionShootDelay;
@@ -76,7 +105,9 @@ class Minion extends Sprite {
 		if (lightningAlarm > 0) lightningAlarm--;
 		else {
 			lightningAlarm = lightningDelay;
-			if (Random.bool(UpgradeData.minionLightningChance)) Lightning.shoot(x);
+			if (Random.bool(UpgradeData.minionLightningChance)) {
+				Lightning.shoot(x, 0);
+			}
 			
 		}
 		
@@ -118,6 +149,16 @@ class Minion extends Sprite {
 		#else
 		if (y < 430) y += 2.5;
 		#end
+	}
+	
+	public function getHit():Void {
+		if (hitDelayAlarm > 0) return;
+		#if (cap_30 && !debug)
+		hitDelayAlarm = 30;
+		#else
+		hitDelayAlarm = 60;
+		#end
+		lives--;
 	}
 	
 	inline function move():Void {

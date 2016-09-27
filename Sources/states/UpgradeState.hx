@@ -2,8 +2,9 @@ package states;
 
 import kala.behaviors.tween.Ease;
 import kala.behaviors.tween.Tween;
+import kala.Kala;
 import kala.objects.group.Group.GenericGroup;
-import kala.objects.sprite.PushSprite;
+import kala.objects.sprite.ButtonSprite;
 import kala.objects.sprite.Sprite;
 import kala.objects.text.BasicText;
 import kala.objects.text.Text;
@@ -17,23 +18,22 @@ class UpgradeState extends GenericGroup {
 	
 	//
 	
+	public var background:Sprite;
+	
 	public var currentItem(default, set):Int;
 	public var itemButtons:Array<ItemButton> = new Array<ItemButton>();
 	public var upgradeButton:Button;
+	public var upgradeGroup:GenericGroup;
+	public var startButton:Button;
+	public var backButton:Button;
+	public var gemIcon:Sprite;
+	public var moneyText:BasicText;
+	public var descriptionBG:Sprite;
+	public var descriptionText:Text;
+	public var costText:BasicText;
+	public var levelText:BasicText;
 	
-	var background:Sprite;
-	
-	var upgradeGroup:GenericGroup;
-	var startButton:Button;
-	var backButton:Button;
-	var gemIcon:Sprite;
-	var moneyText:BasicText;
-	var descriptionBG:Sprite;
-	var descriptionText:Text;
-	var costText:BasicText;
-	var levelText:BasicText;
-	
-	var tween:Tween;
+	public var tween:Tween;
 	
 	public function new() {
 		super();
@@ -53,7 +53,6 @@ class UpgradeState extends GenericGroup {
 		upgradeGroup.add(gemIcon);
 		
 		moneyText = new BasicText(30);
-		moneyText.text = "x " + UpgradeData.money;
 		moneyText.x = gemIcon.x + gemIcon.width - 10;
 		moneyText.y = gemIcon.y + (gemIcon.height - moneyText.height) / 2;
 		upgradeGroup.add(moneyText);
@@ -62,7 +61,7 @@ class UpgradeState extends GenericGroup {
 		startButton.x = 550;
 		startButton.onOver.notify(onButtonHoverHandle);
 		startButton.onOut.notify(onButtonOutHandle);
-		startButton.onRelease.notify(onButtonReleaseHandle);
+		startButton.onPush.notify(onButtonReleaseHandle);
 		upgradeGroup.add(startButton);
 		
 		backButton = new Button("backButton", R.upgradeBackButton);
@@ -70,7 +69,7 @@ class UpgradeState extends GenericGroup {
 		backButton.scale.ox = backButton.width;
 		backButton.onOver.notify(onButtonHoverHandle);
 		backButton.onOut.notify(onButtonOutHandle);
-		backButton.onRelease.notify(onButtonReleaseHandle);
+		backButton.onPush.notify(onButtonReleaseHandle);
 		upgradeGroup.add(backButton);
 		
 		var itemX:Int = 10;
@@ -105,7 +104,7 @@ class UpgradeState extends GenericGroup {
 		upgradeButton.setXY(descriptionBG.x + padding, descriptionBG.y + padding);
 		upgradeButton.onOver.notify(onButtonHoverHandle);
 		upgradeButton.onOut.notify(onButtonOutHandle);
-		upgradeButton.onRelease.notify(onButtonReleaseHandle);
+		upgradeButton.onPush.notify(onButtonReleaseHandle);
 		upgradeGroup.add(upgradeButton);
 		
 		costText = new BasicText();
@@ -134,8 +133,20 @@ class UpgradeState extends GenericGroup {
 	}
 	
 	function onStartHandle(_):Void {
+		Kala.updateRate = 60;
+		
+		backButton.scale.setXY(1, 1);
+		startButton.scale.setXY(1, 1);
+		
+		for (item in itemButtons) {
+			item.scale.setXY(0.8, 0.8);
+			item.selected = false;
+			item.onOutHandle(null);
+		}
+		
 		currentItem = 0;
 		updateItems();
+		upgradeButton.opacity = 0.75;
 		itemButtons[0].scale.setXY(1, 1);
 		itemButtons[0].onReleaseHandle(null, 0);
 		
@@ -144,19 +155,21 @@ class UpgradeState extends GenericGroup {
 			.tween(upgradeGroup, { x: 0 }, 80, Ease.bounceOut)
 			.call(function(_) upgradeGroup.active = true)
 		.start();
+		
+		G.audioButton.hide();
 	}
 	
-	function onButtonHoverHandle(button:PushSprite):Void {
-		if (button.data == "upgradeButton") button.opacity = 1;
+	function onButtonHoverHandle(button:ButtonSprite):Void {
+		if (button.data == "upgradeButton") button.opacity = itemButtons[currentItem].upgradable ? 1 : 0.75;
 		else button.scale.setXY(1.2, 1.2);
 	}
 	
-	function onButtonOutHandle(button:PushSprite):Void {
+	function onButtonOutHandle(button:ButtonSprite):Void {
 		if (button.data == "upgradeButton") button.opacity = 0.75;
 		else button.scale.setXY(1, 1);
 	}
 	
-	function onButtonReleaseHandle(button:PushSprite, _):Void {
+	function onButtonReleaseHandle(button:ButtonSprite, _):Void {
 		switch(button.data) {
 			case "upgradeButton": upgradeItem();
 			case "startButton": startGame();
@@ -165,10 +178,10 @@ class UpgradeState extends GenericGroup {
 	}
 	
 	function upgradeItem():Void {
+		G.sfxGroup.play(R.sounds.upgrade);
 		UpgradeData.upgrade(currentItem);
 		currentItem = currentItem; // Update cost & level texts.
 		updateItems();
-		moneyText.text = "x " + UpgradeData.money;
 	}
 	
 	function updateItems():Void {
@@ -187,16 +200,22 @@ class UpgradeState extends GenericGroup {
 	}
 	
 	function startGame():Void {
+		Save.save();
 		UpgradeData.update();
+		G.audioButton.show();
 		
 		upgradeGroup.active = false;
 		tween.get()
 			.tween(upgradeGroup, { x: -G.width }, 80, Ease.backIn)
 			.call(function(_) G.switchState(PlayState.instance))
 		.start();
+		
+		if (!G.tutorialPassed) PlayState.instance.tutorialState = 0;
+		else PlayState.instance.tutorialState = -1;
 	}
 	
 	function backToMainMenu():Void {
+		Save.save();
 		UpgradeData.update();
 		
 		upgradeGroup.active = false;
@@ -216,16 +235,16 @@ class UpgradeState extends GenericGroup {
 		}
 
 		switch(value) {
-			case 0: descriptionText.text = "Increases your lives.";
-			case 1: descriptionText.text = "Increases your fire rate and bullets per shot.";
+			case 0: descriptionText.text = "Increases your starting lives.";
+			case 1: descriptionText.text = "Increases your fire rate and number of bullets per shot.";
 			case 2: descriptionText.text = "Increases the duration of your webs.";
-			case 3: descriptionText.text = "Increases the power of your and your children lightning.";
-			case 4: descriptionText.text = "Gives you more gems when an enemy is destroyed.";
+			case 3: descriptionText.text = "Increases the power of lightning.";
+			case 4: descriptionText.text = "Increases the quantity of crystals dropped from enemies.";
 			case 5: descriptionText.text = "Increases the spawn rate of your children.";
-			case 6: descriptionText.text = "Increases the lives of your children.";
+			case 6: descriptionText.text = "Helps your children withstand more attack";
 			case 7: descriptionText.text = "Increases the fire rate of your children.";
-			case 8: descriptionText.text = "Increases the lightning casting chance of your children.";
-			case 9: descriptionText.text = "Increases your radius of collecting gems.";
+			case 8: descriptionText.text = "Increases chance of your children casting lightning.";
+			case 9: descriptionText.text = "Increases the radius to attract crystals.";
 		}
 		
 		return currentItem = value;
@@ -235,8 +254,8 @@ class UpgradeState extends GenericGroup {
 
 class ItemButton extends Button {
 	
-	public var selected(default, set):Bool = false;
-	public var upgradable:Bool = false;
+	public var selected:Bool = false;
+	public var upgradable(default, set):Bool = false;
 	
 	public function new(id:Int) {
 		super(id, Reflect.getProperty(R, "upgradeItem" + id));
@@ -246,7 +265,7 @@ class ItemButton extends Button {
 		
 		onOver.notify(onHoverHandle);
 		onOut.notify(onOutHandle);
-		onRelease.notify(onReleaseHandle);
+		onPush.notify(onReleaseHandle);
 	}
 	
 	override public function update(elapsed:FastFloat):Void {
@@ -266,18 +285,18 @@ class ItemButton extends Button {
 		selected = true;
 	}
 	
-	function onHoverHandle(_):Void {
-		if (!selected) opacity = upgradable ? 1 : 0.75;
+	public function onHoverHandle(_):Void {
+		opacity = 1;
 	}
 	
-	function onOutHandle(_):Void {
-		if (!selected) opacity = upgradable ? 0.75 : 0.5;
+	public function onOutHandle(_):Void {
+		opacity = 0.75;
 	}
 	
-	function set_selected(value:Bool):Bool {
-		if (value) opacity = upgradable ? 1 : 0.75;
-		else opacity = upgradable ? 0.75 : 0.5;
-		return selected = value;
+	function set_upgradable(value:Bool):Bool {
+		if (value) color = 0xffffffff;
+		else color = 0xffff2222;
+		return upgradable = value;
 	}
 	
 }
