@@ -108,7 +108,7 @@ class R {
 	
 	static function onSoundUncompressed():Void {
 		uncompressedSoundCount++;
-		if (uncompressedSoundCount == 1) {
+		if (uncompressedSoundCount == 6) {
 			onAllSoundsUncompressedCB();
 		}
 	}

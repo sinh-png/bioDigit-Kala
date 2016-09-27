@@ -1,9 +1,24 @@
 
 [bioDigit](https://play.google.com/store/apps/details?id=me.haza.biodigit) remade with [Kala](https://github.com/hazagames/Kala). WIP.
 
+###PLAY:
+
+There are two versions of the games:
+
+- FPS capped at 60: https://melon-not-found.github.io/bioDigit-Kala/cap60/
+
+- FPS capped at 30 (recommended for mobile devices): https://melon-not-found.github.io/bioDigit-Kala/cap30/
+
+Only work correctly on Chrome for all devices.
+
+###KNOWN BUGS:
+
+- Audio settings don't work when playing on mobile devices. Related to https://github.com/KTXSoftware/Kha/issues/299.
+- Sometime touch gets stuck.
+
 ###NOTES
 
-- The game framerate is capped at 30fps when 'cap_30' is defined and building in release mode, this is to make sure the game can run stably targeting HTML5 on low-end mobile devices. Currently Kha is not yet implemented a way for us to limit rendering framerate so you will have to directly change Kha source codes for that. Without limiting the rendering rate, it's best to not cap the updating rate, doing this by removing `project.addDefine('cap_30');` in `khafile.js`.
+- The game framerate is capped at 30fps when 'cap_30' is defined and building in release mode. Currently Kha is not yet implemented a way for us to limit rendering framerate so you will have to directly make change on Kha for that.
 
 - Art assets were packed with [TexturePacker](https://www.codeandweb.com/texturepacker) free version.
 
