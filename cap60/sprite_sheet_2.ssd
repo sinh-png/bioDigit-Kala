@@ -1,0 +1,507 @@
+{"frames": [
+
+{
+	"filename": "sound_button/on.png",
+	"frame": {"x":0,"y":0,"w":37,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":37,"h":31},
+	"sourceSize": {"w":37,"h":31},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "sound_button/off.png",
+	"frame": {"x":37,"y":0,"w":37,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":37,"h":31},
+	"sourceSize": {"w":37,"h":31},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "crystal.png",
+	"frame": {"x":74,"y":0,"w":50,"h":36},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":36},
+	"sourceSize": {"w":50,"h":36},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "back_button.png",
+	"frame": {"x":124,"y":0,"w":36,"h":41},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":41},
+	"sourceSize": {"w":36,"h":41},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "heart.png",
+	"frame": {"x":160,"y":0,"w":49,"h":45},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":45},
+	"sourceSize": {"w":49,"h":45},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/bullet.png",
+	"frame": {"x":209,"y":0,"w":33,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":33,"h":47},
+	"sourceSize": {"w":33,"h":47},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_3/mini/1.png",
+	"frame": {"x":242,"y":0,"w":42,"h":57},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":57},
+	"sourceSize": {"w":42,"h":57},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_3/mini/2.png",
+	"frame": {"x":284,"y":0,"w":42,"h":57},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":57},
+	"sourceSize": {"w":42,"h":57},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_3/mini/0.png",
+	"frame": {"x":326,"y":0,"w":42,"h":57},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":57},
+	"sourceSize": {"w":42,"h":57},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_3/mini/3.png",
+	"frame": {"x":368,"y":0,"w":42,"h":57},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":57},
+	"sourceSize": {"w":42,"h":57},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/mini/stand/2.png",
+	"frame": {"x":410,"y":0,"w":85,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":69},
+	"sourceSize": {"w":85,"h":69},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/mini/stand/3.png",
+	"frame": {"x":495,"y":0,"w":85,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":69},
+	"sourceSize": {"w":85,"h":69},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/mini/stand/1.png",
+	"frame": {"x":580,"y":0,"w":85,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":69},
+	"sourceSize": {"w":85,"h":69},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/mini/run/0.png",
+	"frame": {"x":665,"y":0,"w":85,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":69},
+	"sourceSize": {"w":85,"h":69},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/mini/run/1.png",
+	"frame": {"x":750,"y":0,"w":85,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":69},
+	"sourceSize": {"w":85,"h":69},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/mini/stand/0.png",
+	"frame": {"x":835,"y":0,"w":85,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":69},
+	"sourceSize": {"w":85,"h":69},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/mini/run/2.png",
+	"frame": {"x":920,"y":0,"w":85,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":69},
+	"sourceSize": {"w":85,"h":69},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "crystal_icon.png",
+	"frame": {"x":1005,"y":0,"w":73,"h":73},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":73,"h":73},
+	"sourceSize": {"w":73,"h":73},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_1.png",
+	"frame": {"x":1078,"y":0,"w":112,"h":109},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":112,"h":109},
+	"sourceSize": {"w":112,"h":109},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/ball/0.png",
+	"frame": {"x":0,"y":109,"w":120,"h":116},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":116},
+	"sourceSize": {"w":120,"h":116},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/ball/2.png",
+	"frame": {"x":120,"y":109,"w":120,"h":116},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":116},
+	"sourceSize": {"w":120,"h":116},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/ball/1.png",
+	"frame": {"x":240,"y":109,"w":120,"h":116},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":116},
+	"sourceSize": {"w":120,"h":116},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "fingerprint.png",
+	"frame": {"x":360,"y":109,"w":112,"h":141},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":112,"h":141},
+	"sourceSize": {"w":112,"h":141},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/stand/3.png",
+	"frame": {"x":472,"y":109,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/charge/2.png",
+	"frame": {"x":707,"y":109,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/charge/3.png",
+	"frame": {"x":942,"y":109,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/stand/1.png",
+	"frame": {"x":0,"y":251,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/run/0.png",
+	"frame": {"x":235,"y":251,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/stand/0.png",
+	"frame": {"x":470,"y":251,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/run/1.png",
+	"frame": {"x":705,"y":251,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/run/2.png",
+	"frame": {"x":940,"y":251,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/stand/2.png",
+	"frame": {"x":0,"y":393,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/charge/0.png",
+	"frame": {"x":235,"y":393,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/frames/charge/1.png",
+	"frame": {"x":470,"y":393,"w":235,"h":142},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":235,"h":142},
+	"sourceSize": {"w":235,"h":142},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_2/0.png",
+	"frame": {"x":705,"y":393,"w":196,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":145},
+	"sourceSize": {"w":196,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_2/1.png",
+	"frame": {"x":901,"y":393,"w":196,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":145},
+	"sourceSize": {"w":196,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_2/5.png",
+	"frame": {"x":0,"y":538,"w":196,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":145},
+	"sourceSize": {"w":196,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_2/3.png",
+	"frame": {"x":196,"y":538,"w":196,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":145},
+	"sourceSize": {"w":196,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_2/2.png",
+	"frame": {"x":392,"y":538,"w":196,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":145},
+	"sourceSize": {"w":196,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_2/4.png",
+	"frame": {"x":588,"y":538,"w":196,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":145},
+	"sourceSize": {"w":196,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_3/big/2.png",
+	"frame": {"x":784,"y":538,"w":133,"h":178},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":133,"h":178},
+	"sourceSize": {"w":133,"h":178},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_3/big/0.png",
+	"frame": {"x":917,"y":538,"w":133,"h":178},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":133,"h":178},
+	"sourceSize": {"w":133,"h":178},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_3/big/1.png",
+	"frame": {"x":1050,"y":538,"w":133,"h":178},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":133,"h":178},
+	"sourceSize": {"w":133,"h":178},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/boss/body.png",
+	"frame": {"x":0,"y":716,"w":700,"h":237},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":700,"h":237},
+	"sourceSize": {"w":700,"h":237},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/boss/throne/small.png",
+	"frame": {"x":700,"y":716,"w":246,"h":240},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":246,"h":240},
+	"sourceSize": {"w":246,"h":240},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/enemy_0.png",
+	"frame": {"x":946,"y":716,"w":280,"h":274},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":280,"h":274},
+	"sourceSize": {"w":280,"h":274},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/boss/throne/big.png",
+	"frame": {"x":0,"y":990,"w":343,"h":342},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":343,"h":342},
+	"sourceSize": {"w":343,"h":342},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/web/spreading.png",
+	"frame": {"x":343,"y":990,"w":458,"h":400},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":458,"h":400},
+	"sourceSize": {"w":458,"h":400},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/web/shooting.png",
+	"frame": {"x":801,"y":990,"w":300,"h":400},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":400},
+	"sourceSize": {"w":300,"h":400},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/lightning/1.png",
+	"frame": {"x":0,"y":1390,"w":262,"h":460},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":262,"h":460},
+	"sourceSize": {"w":262,"h":460},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/lightning/0.png",
+	"frame": {"x":262,"y":1390,"w":262,"h":460},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":262,"h":460},
+	"sourceSize": {"w":262,"h":460},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "player/lightning/2.png",
+	"frame": {"x":524,"y":1390,"w":262,"h":460},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":262,"h":460},
+	"sourceSize": {"w":262,"h":460},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/boss/lightning/0.png",
+	"frame": {"x":786,"y":1390,"w":120,"h":505},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":505},
+	"sourceSize": {"w":120,"h":505},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/boss/lightning/1.png",
+	"frame": {"x":906,"y":1390,"w":120,"h":505},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":505},
+	"sourceSize": {"w":120,"h":505},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "enemies/boss/lightning/2.png",
+	"frame": {"x":1026,"y":1390,"w":120,"h":505},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":505},
+	"sourceSize": {"w":120,"h":505},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "sprite_sheet_2.png",
+	"format": "RGBA8888",
+	"size": {"w":1226,"h":1895},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:076665cb71a8f68d148d94aa01b8fd74:cfe163c7c1efe14a9c2a27c2f9897c4c:6e565c4651ba02975bd3eee7b0c9081e$"
+}
+}
