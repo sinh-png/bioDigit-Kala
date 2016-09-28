@@ -1,5 +1,5 @@
 
-[bioDigit](https://play.google.com/store/apps/details?id=me.haza.biodigit) remade with [Kala](https://github.com/hazagames/Kala). WIP.
+[bioDigit](https://play.google.com/store/apps/details?id=me.haza.biodigit) remade with [Kala](https://github.com/hazagames/Kala).
 
 ###PLAY:
 
