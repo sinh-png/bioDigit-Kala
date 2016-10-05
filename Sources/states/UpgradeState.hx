@@ -4,6 +4,7 @@ import kala.behaviors.tween.Ease;
 import kala.behaviors.tween.Tween;
 import kala.Kala;
 import kala.objects.group.Group.GenericGroup;
+import kala.objects.sprite.BaseButtonSprite;
 import kala.objects.sprite.ButtonSprite;
 import kala.objects.sprite.Sprite;
 import kala.objects.text.BasicText;
@@ -159,17 +160,17 @@ class UpgradeState extends GenericGroup {
 		G.audioButton.hide();
 	}
 	
-	function onButtonHoverHandle(button:ButtonSprite):Void {
+	function onButtonHoverHandle(button:BaseButtonSprite):Void {
 		if (button.data == "upgradeButton") button.opacity = itemButtons[currentItem].upgradable ? 1 : 0.75;
 		else button.scale.setXY(1.2, 1.2);
 	}
 	
-	function onButtonOutHandle(button:ButtonSprite):Void {
+	function onButtonOutHandle(button:BaseButtonSprite):Void {
 		if (button.data == "upgradeButton") button.opacity = 0.75;
 		else button.scale.setXY(1, 1);
 	}
 	
-	function onButtonReleaseHandle(button:ButtonSprite, _):Void {
+	function onButtonReleaseHandle(button:BaseButtonSprite, _):Void {
 		switch(button.data) {
 			case "upgradeButton": upgradeItem();
 			case "startButton": startGame();

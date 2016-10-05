@@ -5,6 +5,7 @@ import kala.behaviors.tween.Tween;
 import kala.Kala;
 import kala.objects.group.Group;
 import kala.objects.group.Group.GenericGroup;
+import kala.objects.sprite.BaseButtonSprite;
 import kala.objects.sprite.ButtonSprite;
 import kala.objects.sprite.Sprite;
 import ui.Button;
@@ -53,6 +54,9 @@ class MainMenuState extends GenericGroup {
 		playButton.onOver.notify(onButtonHoveredHandle);
 		playButton.onOut.notify(onButtonOutHandle);
 		playButton.onRelease.notify(onButtonReleaseHandle);
+		#if js
+		playButton.onReleaseRequestFullscreen = Kala.html5.mobile;
+		#end
 		buttonsGroup.add(playButton);
 		
 		helpButton = new Button("help", R.sheets.sprite_sheet_1.get("main_menu/help_button.png", R.images.sprite_sheet_1), true);
@@ -79,7 +83,7 @@ class MainMenuState extends GenericGroup {
 		androidButton.antialiasing = true;
 		androidButton.onOver.notify(onButtonHoveredHandle);
 		androidButton.onOut.notify(onButtonOutHandle);
-		androidButton.onRelease.notify(onButtonReleaseHandle);
+		androidButton.onReleaseOpenURL = "https://play.google.com/store/apps/details?id=me.haza.biodigit&hl=en";
 		buttonsGroup.add(androidButton);
 		
 		playButton.position.setXBetween(0, 320, 0);
@@ -110,7 +114,7 @@ class MainMenuState extends GenericGroup {
 		G.audioButton.show();
 	}
 	
-	function onButtonHoveredHandle(button:ButtonSprite):Void {
+	function onButtonHoveredHandle(button:BaseButtonSprite):Void {
 		if (button.data == "android") return;
 		
 		picker.visible = true;
@@ -123,18 +127,17 @@ class MainMenuState extends GenericGroup {
 		}
 	}
 	
-	function onButtonOutHandle(button:ButtonSprite):Void {
+	function onButtonOutHandle(button:BaseButtonSprite):Void {
 		if (button.data == "android") return;
 		picker.visible = false;
 	}
 	
-	function onButtonReleaseHandle(button:ButtonSprite, _):Void {
+	function onButtonReleaseHandle(button:BaseButtonSprite, _):Void {
 		switch(button.data) {
 			case "play": play();
 			case "help": startTutorial();
 			case "settings": openSettings();
 			case "credit": openCredit();
-			case "android":  Kala.openURL("https://play.google.com/store/apps/details?id=me.haza.biodigit&hl=en");
 		}
 	}
 	

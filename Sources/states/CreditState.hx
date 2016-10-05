@@ -244,7 +244,7 @@ class AnimatedText extends GenericGroup {
 			button.addRectMask(rect.x, rect.y, rect.width, rect.height);
 			button.onOut.notify(onOutHandle);
 			button.onOver.notify(onOverHandle);
-			button.onRelease.notify(onReleaseHandle);
+			button.onReleaseOpenURL = url;
 			add(button);
 		}
 	}
@@ -311,10 +311,6 @@ class AnimatedText extends GenericGroup {
 		for (i in startIndex...coloredRange.b) {
 			members[i].color = colors.b;
 		}
-	}
-	
-	function onReleaseHandle(_, _):Void {
-		Kala.openURL(url);
 	}
 	
 }

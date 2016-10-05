@@ -1,5 +1,6 @@
 package states;
 
+import kala.behaviors.input.BaseButtonInteraction;
 import kala.behaviors.input.ButtonInteraction;
 import kala.behaviors.tween.Ease;
 import kala.behaviors.tween.Tween;
@@ -9,6 +10,7 @@ import kala.Kala;
 import kala.objects.group.Group.GenericGroup;
 import kala.objects.Object;
 import kala.objects.shapes.Rectangle;
+import kala.objects.sprite.BaseButtonSprite;
 import kala.objects.sprite.ButtonSprite;
 import kala.objects.sprite.Sprite;
 import kala.objects.text.BasicText;
@@ -236,7 +238,7 @@ class SettingMenuState extends GenericGroup {
 		.start();
 	}
 	
-	function onOverHandle(button:ButtonSprite):Void {
+	function onOverHandle(button:BaseButtonSprite):Void {
 		var type = button.data.type;
 		
 		if (button.data.kind == "button") {
@@ -268,7 +270,7 @@ class SettingMenuState extends GenericGroup {
 		}
 	}
 	
-	function onOutHandle(button:ButtonSprite):Void {
+	function onOutHandle(button:BaseButtonSprite):Void {
 		if (button.data.type == "back") {
 			button.opacity = 0.7;
 		} else {
@@ -276,7 +278,7 @@ class SettingMenuState extends GenericGroup {
 		}
 	}
 	
-	function onPushHandle(button:ButtonSprite, _):Void {
+	function onPushHandle(button:BaseButtonSprite, _):Void {
 		var type = button.data.type;
 		
 		if (button.data.kind == "button") {
@@ -290,11 +292,11 @@ class SettingMenuState extends GenericGroup {
 		}
 	}
 	
-	function onOverResetOptionText(behavior:ButtonInteraction):Void {
+	function onOverResetOptionText(behavior:BaseButtonInteraction):Void {
 		behavior.object.scale.setXY(1.2, 1.2);
 	}
 	
-	function onOutResetOptionText(behavior:ButtonInteraction):Void {
+	function onOutResetOptionText(behavior:BaseButtonInteraction):Void {
 		behavior.object.scale.setXY(1, 1);
 	}
 	
