@@ -12973,38 +12973,6 @@ kala_DrawingData.prototype = {
 	,extra: null
 	,__class__: kala_DrawingData
 };
-var kala_system_HTML5 = function() {
-};
-$hxClasses["kala.system.HTML5"] = kala_system_HTML5;
-kala_system_HTML5.__name__ = ["kala","system","HTML5"];
-kala_system_HTML5.prototype = {
-	fillPage: function() {
-		var node = window.document.createElement("meta");
-		node.setAttribute("name","viewport");
-		node.setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no");
-		window.document.head.appendChild(node);
-		var $window = window;
-		var canvas = window.document.getElementById("khanvas");
-		var resizeCanvas = function() {
-			canvas.style.width = $window.innerWidth;
-			$window.setTimeout(function() {
-				canvas.style.height = $window.innerHeight;
-			},0);
-		};
-		$window.addEventListener("resize",resizeCanvas,false);
-		$window.addEventListener("orientationchange",resizeCanvas,false);
-		window.document.body.style.margin = "0";
-		window.document.body.style.overflow = "hidden";
-		canvas.style.position = "absolute";
-		canvas.style.left = canvas.style.top = "0";
-		canvas.style.width = canvas.style.height = "100%";
-	}
-	,get_mobile: function() {
-		return kha_SystemImpl.mobile;
-	}
-	,__class__: kala_system_HTML5
-	,__properties__: {get_mobile:"get_mobile"}
-};
 var kala_Kala = function() { };
 $hxClasses["kala.Kala"] = kala_Kala;
 kala_Kala.__name__ = ["kala","Kala"];
@@ -13031,6 +12999,7 @@ kala_Kala.start = function(title,screenWidth,screenHeight,antiAliasingSamples,up
 	kala_Kala.width = screenWidth;
 	kala_Kala.height = screenHeight;
 	kha_System.init({ title : title, width : kala_Kala.width, height : kala_Kala.height, samplesPerPixel : antiAliasingSamples},function() {
+		kala_Kala.html5 = new kala_system_HTML5();
 		if(loadAllAssets) {
 			kha_Assets.loadEverything(function() {
 				kala_Kala.startWorld(updateRate);
@@ -13048,6 +13017,9 @@ kala_Kala.openURL = function(url,target) {
 		target = "_blank";
 	}
 	window.open(url,target);
+};
+kala_Kala.requestFullscreen = function() {
+	kha_SystemImpl.requestFullscreen();
 };
 kala_Kala.startWorld = function(updateRate) {
 	kala_input_Keyboard.init();
@@ -14457,12 +14429,11 @@ kala_behaviors_display_SpriteAnimationData.prototype = {
 	,delay: null
 	,__class__: kala_behaviors_display_SpriteAnimationData
 };
-var kala_behaviors_input_BasicButtonInteraction = function(object,collider,objectRectScale) {
+var kala_behaviors_input_BaseButtonInteraction = function(object,objectRectScale) {
 	if(objectRectScale == null) {
 		objectRectScale = 0;
 	}
-	kala_behaviors_Behavior.call(this);
-	this.collider = collider;
+	kala_behaviors_Behavior.call(this,object);
 	var handle = new kala_CallbackHandle();
 	this._cbHandles.push(handle);
 	this.onPush = handle;
@@ -14475,6 +14446,268 @@ var kala_behaviors_input_BasicButtonInteraction = function(object,collider,objec
 	var handle3 = new kala_CallbackHandle();
 	this._cbHandles.push(handle3);
 	this.onOut = handle3;
+};
+$hxClasses["kala.behaviors.input.BaseButtonInteraction"] = kala_behaviors_input_BaseButtonInteraction;
+kala_behaviors_input_BaseButtonInteraction.__name__ = ["kala","behaviors","input","BaseButtonInteraction"];
+kala_behaviors_input_BaseButtonInteraction.__super__ = kala_behaviors_Behavior;
+kala_behaviors_input_BaseButtonInteraction.prototype = $extend(kala_behaviors_Behavior.prototype,{
+	active: null
+	,hovered: null
+	,onPush: null
+	,onRelease: null
+	,onOver: null
+	,onOut: null
+	,onPushRequestFullscreen: null
+	,onReleaseRequestFullscreen: null
+	,onPushOpenURL: null
+	,onReleaseOpenURL: null
+	,view: null
+	,disableMouseOnMobile: null
+	,_mouseHovered: null
+	,_touched: null
+	,reset: function() {
+		kala_behaviors_Behavior.prototype.reset.call(this);
+		this.active = true;
+		this.hovered = this._mouseHovered = this._touched = false;
+		this.disableMouseOnMobile = true;
+		this.view = null;
+		this.onPushRequestFullscreen = this.onReleaseRequestFullscreen = false;
+		this.onPushOpenURL = this.onReleaseOpenURL = null;
+	}
+	,destroy: function() {
+		kala_behaviors_Behavior.prototype.destroy.call(this);
+		this.view = null;
+		this.onPush = null;
+		this.onRelease = null;
+		this.onOver = null;
+		this.onOut = null;
+	}
+	,addTo: function(object) {
+		kala_behaviors_Behavior.prototype.addTo.call(this,object);
+		object.onPostUpdate._callbacks.push(new kala_Callback($bind(this,this.update),this));
+		return this;
+	}
+	,remove: function() {
+		if(this.object != null) {
+			this.object.onPostUpdate.removePrivateCB(this,$bind(this,this.update));
+		}
+		kala_behaviors_Behavior.prototype.remove.call(this);
+	}
+	,test: function(x,y) {
+		return false;
+	}
+	,update: function(obj,elapsed) {
+		if(!this.active) {
+			return;
+		}
+		if(!this.disableMouseOnMobile || !kha_SystemImpl.mobile) {
+			this.updateMouse();
+		}
+		this.updateTouch();
+		if(this.hovered && !this._touched && !this._mouseHovered) {
+			kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.openURLOnPush));
+			kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.openURLOnRelease));
+			kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.requestFullscreen));
+			kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.requestFullscreen));
+			this.hovered = false;
+			var tmp = HxOverrides.iter(this.onOut._callbacks);
+			while(tmp.hasNext()) tmp.next().cbFunction(this);
+		}
+	}
+	,updateMouse: function() {
+		var p;
+		if(this.view == null) {
+			p = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
+		} else {
+			var this1 = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
+			var _this = this.view._cachedDrawingMatrix;
+			var c00 = _this._11 * _this._22 - _this._21 * _this._12;
+			var c01 = _this._10 * _this._22 - _this._20 * _this._12;
+			var c02 = _this._10 * _this._21 - _this._20 * _this._11;
+			var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
+			if(Math.abs(det) < 0.000001) {
+				throw new js__$Boot_HaxeError("determinant is too small");
+			}
+			var c10 = _this._01 * _this._22 - _this._21 * _this._02;
+			var c11 = _this._00 * _this._22 - _this._20 * _this._02;
+			var c12 = _this._00 * _this._21 - _this._20 * _this._01;
+			var c20 = _this._01 * _this._12 - _this._11 * _this._02;
+			var c21 = _this._00 * _this._12 - _this._10 * _this._02;
+			var c22 = _this._00 * _this._11 - _this._10 * _this._01;
+			var invdet = 1.0 / det;
+			var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
+			var xx = this1.x;
+			var yy = this1.y;
+			this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
+			this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
+			p = this1;
+		}
+		if(this.test(p.x,p.y)) {
+			if(!this.hovered) {
+				if(this.onPushOpenURL != null) {
+					kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.openURLOnPush));
+				}
+				if(this.onReleaseOpenURL != null) {
+					kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.openURLOnRelease));
+				}
+				if(this.onPushRequestFullscreen) {
+					kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.requestFullscreen));
+				}
+				if(this.onReleaseRequestFullscreen) {
+					kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.requestFullscreen));
+				}
+				this.hovered = true;
+				var tmp = HxOverrides.iter(this.onOver._callbacks);
+				while(tmp.hasNext()) tmp.next().cbFunction(this);
+			}
+			if(kala_input_Mouse.LEFT.duration == 0) {
+				var tmp1 = HxOverrides.iter(this.onPush._callbacks);
+				while(tmp1.hasNext()) tmp1.next().cbFunction(this,1);
+			} else if(kala_input_Mouse.LEFT.justReleased) {
+				var tmp2 = HxOverrides.iter(this.onRelease._callbacks);
+				while(tmp2.hasNext()) tmp2.next().cbFunction(this,1);
+			}
+			if(kala_input_Mouse.MIDDLE.duration == 0) {
+				var tmp3 = HxOverrides.iter(this.onPush._callbacks);
+				while(tmp3.hasNext()) tmp3.next().cbFunction(this,2);
+			} else if(kala_input_Mouse.MIDDLE.justReleased) {
+				var tmp4 = HxOverrides.iter(this.onRelease._callbacks);
+				while(tmp4.hasNext()) tmp4.next().cbFunction(this,2);
+			}
+			if(kala_input_Mouse.RIGHT.duration == 0) {
+				var tmp5 = HxOverrides.iter(this.onPush._callbacks);
+				while(tmp5.hasNext()) tmp5.next().cbFunction(this,3);
+			} else if(kala_input_Mouse.RIGHT.justReleased) {
+				var tmp6 = HxOverrides.iter(this.onRelease._callbacks);
+				while(tmp6.hasNext()) tmp6.next().cbFunction(this,3);
+			}
+			this._mouseHovered = true;
+		} else {
+			this._mouseHovered = false;
+		}
+	}
+	,updateTouch: function() {
+		this._touched = false;
+		var p;
+		var tmp = kala_input_Touch.touches.iterator();
+		while(tmp.hasNext()) {
+			var touch = tmp.next();
+			if(this.view == null) {
+				p = new kha_math_FastVector2(touch.x,touch.y);
+			} else {
+				var this1 = new kha_math_FastVector2(touch.x,touch.y);
+				var _this = this.view._cachedDrawingMatrix;
+				var c00 = _this._11 * _this._22 - _this._21 * _this._12;
+				var c01 = _this._10 * _this._22 - _this._20 * _this._12;
+				var c02 = _this._10 * _this._21 - _this._20 * _this._11;
+				var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
+				if(Math.abs(det) < 0.000001) {
+					throw new js__$Boot_HaxeError("determinant is too small");
+				}
+				var c10 = _this._01 * _this._22 - _this._21 * _this._02;
+				var c11 = _this._00 * _this._22 - _this._20 * _this._02;
+				var c12 = _this._00 * _this._21 - _this._20 * _this._01;
+				var c20 = _this._01 * _this._12 - _this._11 * _this._02;
+				var c21 = _this._00 * _this._12 - _this._10 * _this._02;
+				var c22 = _this._00 * _this._11 - _this._10 * _this._01;
+				var invdet = 1.0 / det;
+				var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
+				var xx = this1.x;
+				var yy = this1.y;
+				this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
+				this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
+				p = this1;
+			}
+			if(this.test(p.x,p.y)) {
+				if(!this.hovered) {
+					if(this.onPushOpenURL != null) {
+						kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.openURLOnPush));
+					}
+					if(this.onReleaseOpenURL != null) {
+						kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.openURLOnRelease));
+					}
+					if(this.onPushRequestFullscreen) {
+						kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.requestFullscreen));
+					}
+					if(this.onReleaseRequestFullscreen) {
+						kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.requestFullscreen));
+					}
+					this.hovered = true;
+					var tmp1 = HxOverrides.iter(this.onOver._callbacks);
+					while(tmp1.hasNext()) tmp1.next().cbFunction(this);
+				}
+				if(touch.duration == 0) {
+					var id = touch.id;
+					var tmp2 = HxOverrides.iter(this.onPush._callbacks);
+					while(tmp2.hasNext()) tmp2.next().cbFunction(this,id);
+				} else if(touch.justEnded) {
+					var id1 = touch.id;
+					var tmp3 = HxOverrides.iter(this.onRelease._callbacks);
+					while(tmp3.hasNext()) tmp3.next().cbFunction(this,id1);
+				}
+				this._touched = true;
+			}
+		}
+	}
+	,callOnOver: function() {
+		if(this.onPushOpenURL != null) {
+			kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.openURLOnPush));
+		}
+		if(this.onReleaseOpenURL != null) {
+			kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.openURLOnRelease));
+		}
+		if(this.onPushRequestFullscreen) {
+			kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.requestFullscreen));
+		}
+		if(this.onReleaseRequestFullscreen) {
+			kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.requestFullscreen));
+		}
+		this.hovered = true;
+		var tmp = HxOverrides.iter(this.onOver._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this);
+	}
+	,callOnOut: function() {
+		kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.openURLOnPush));
+		kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.openURLOnRelease));
+		kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.requestFullscreen));
+		kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.requestFullscreen));
+		this.hovered = false;
+		var tmp = HxOverrides.iter(this.onOut._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this);
+	}
+	,callOnPush: function(id) {
+		var tmp = HxOverrides.iter(this.onPush._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this,id);
+	}
+	,callOnRelease: function(id) {
+		var tmp = HxOverrides.iter(this.onRelease._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this,id);
+	}
+	,requestFullscreen: function() {
+		kha_SystemImpl.requestFullscreen();
+	}
+	,openURLOnPush: function() {
+		window.open(this.onPushOpenURL,"_blank");
+	}
+	,openURLOnRelease: function() {
+		window.open(this.onReleaseOpenURL,"_blank");
+	}
+	,get_pushed: function() {
+		if(!this._touched) {
+			return this._mouseHovered;
+		} else {
+			return true;
+		}
+	}
+	,__class__: kala_behaviors_input_BaseButtonInteraction
+	,__properties__: {get_pushed:"get_pushed"}
+});
+var kala_behaviors_input_BasicButtonInteraction = function(object,collider,objectRectScale) {
+	if(objectRectScale == null) {
+		objectRectScale = 0;
+	}
+	kala_behaviors_input_BaseButtonInteraction.call(this,null,objectRectScale);
+	this.collider = collider;
 	if(object != null) {
 		this.addTo(object);
 		if(objectRectScale > 0) {
@@ -14499,54 +14732,33 @@ var kala_behaviors_input_BasicButtonInteraction = function(object,collider,objec
 };
 $hxClasses["kala.behaviors.input.BasicButtonInteraction"] = kala_behaviors_input_BasicButtonInteraction;
 kala_behaviors_input_BasicButtonInteraction.__name__ = ["kala","behaviors","input","BasicButtonInteraction"];
-kala_behaviors_input_BasicButtonInteraction.__super__ = kala_behaviors_Behavior;
-kala_behaviors_input_BasicButtonInteraction.prototype = $extend(kala_behaviors_Behavior.prototype,{
+kala_behaviors_input_BasicButtonInteraction.__super__ = kala_behaviors_input_BaseButtonInteraction;
+kala_behaviors_input_BasicButtonInteraction.prototype = $extend(kala_behaviors_input_BaseButtonInteraction.prototype,{
 	collider: null
-	,active: null
-	,hovered: null
-	,onPush: null
-	,onRelease: null
-	,onOver: null
-	,onOut: null
-	,view: null
-	,disableMouseOnMobile: null
-	,_mouseHovered: null
-	,_touched: null
 	,reset: function() {
-		kala_behaviors_Behavior.prototype.reset.call(this);
-		this.active = true;
-		this.hovered = this._mouseHovered = this._touched = false;
-		this.disableMouseOnMobile = true;
-		this.view = null;
+		kala_behaviors_input_BaseButtonInteraction.prototype.reset.call(this);
 		if(this.collider != null) {
 			this.collider.reset();
 		}
 	}
 	,destroy: function() {
-		kala_behaviors_Behavior.prototype.destroy.call(this);
+		kala_behaviors_input_BaseButtonInteraction.prototype.destroy.call(this);
 		this.collider = null;
-		this.view = null;
-		this.onPush = null;
-		this.onRelease = null;
-		this.onOver = null;
-		this.onOut = null;
 	}
 	,addTo: function(object) {
-		kala_behaviors_Behavior.prototype.addTo.call(this,object);
+		kala_behaviors_input_BaseButtonInteraction.prototype.addTo.call(this,object);
 		if(this.collider == null) {
 			this.collider = new kala_behaviors_collision_basic_Collider(object);
 		} else {
 			this.collider.addTo(object);
 		}
-		object.onPostUpdate._callbacks.push(new kala_Callback($bind(this,this.update),this));
 		return this;
 	}
 	,remove: function() {
 		if(this.object != null) {
 			this.collider.remove();
-			this.object.onPostUpdate.removePrivateCB(this,$bind(this,this.update));
 		}
-		kala_behaviors_Behavior.prototype.remove.call(this);
+		kala_behaviors_input_BaseButtonInteraction.prototype.remove.call(this);
 	}
 	,addCircleMask: function(x,y,radius) {
 		var circle = kala_behaviors_collision_basic_shapes_CollisionCircle.pool.get();
@@ -14588,157 +14800,17 @@ kala_behaviors_input_BasicButtonInteraction.prototype = $extend(kala_behaviors_B
 		_this2.y = y;
 		return rect;
 	}
-	,update: function(obj,elapsed) {
-		if(!this.active) {
-			return;
-		}
-		if(!this.disableMouseOnMobile || !kha_SystemImpl.mobile) {
-			this.updateMouse();
-		}
-		this.updateTouch();
-		if(this.hovered && !this._touched && !this._mouseHovered) {
-			this.hovered = false;
-			var tmp = HxOverrides.iter(this.onOut._callbacks);
-			while(tmp.hasNext()) tmp.next().cbFunction(this);
-		}
-	}
-	,updateMouse: function() {
-		var p;
-		if(this.view == null) {
-			p = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-		} else {
-			var this1 = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-			var _this = this.view._cachedDrawingMatrix;
-			var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-			var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-			var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-			var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-			if(Math.abs(det) < 0.000001) {
-				throw new js__$Boot_HaxeError("determinant is too small");
-			}
-			var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-			var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-			var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-			var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-			var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-			var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-			var invdet = 1.0 / det;
-			var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-			var xx = this1.x;
-			var yy = this1.y;
-			this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-			this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-			p = this1;
-		}
-		if(this.collider.testPoint(p.x,p.y)) {
-			if(!this.hovered) {
-				this.hovered = true;
-				var tmp = HxOverrides.iter(this.onOver._callbacks);
-				while(tmp.hasNext()) tmp.next().cbFunction(this);
-			}
-			if(kala_input_Mouse.LEFT.duration == 0) {
-				var tmp1 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp1.hasNext()) tmp1.next().cbFunction(this,1);
-			} else if(kala_input_Mouse.LEFT.justReleased) {
-				var tmp2 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp2.hasNext()) tmp2.next().cbFunction(this,1);
-			}
-			if(kala_input_Mouse.MIDDLE.duration == 0) {
-				var tmp3 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp3.hasNext()) tmp3.next().cbFunction(this,2);
-			} else if(kala_input_Mouse.MIDDLE.justReleased) {
-				var tmp4 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp4.hasNext()) tmp4.next().cbFunction(this,2);
-			}
-			if(kala_input_Mouse.RIGHT.duration == 0) {
-				var tmp5 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp5.hasNext()) tmp5.next().cbFunction(this,3);
-			} else if(kala_input_Mouse.RIGHT.justReleased) {
-				var tmp6 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp6.hasNext()) tmp6.next().cbFunction(this,3);
-			}
-			this._mouseHovered = true;
-		} else {
-			this._mouseHovered = false;
-		}
-	}
-	,updateTouch: function() {
-		this._touched = false;
-		var p;
-		var tmp = kala_input_Touch.touches.iterator();
-		while(tmp.hasNext()) {
-			var touch = tmp.next();
-			if(this.view == null) {
-				p = new kha_math_FastVector2(touch.x,touch.y);
-			} else {
-				var this1 = new kha_math_FastVector2(touch.x,touch.y);
-				var _this = this.view._cachedDrawingMatrix;
-				var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-				var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-				var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-				var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-				if(Math.abs(det) < 0.000001) {
-					throw new js__$Boot_HaxeError("determinant is too small");
-				}
-				var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-				var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-				var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-				var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-				var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-				var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-				var invdet = 1.0 / det;
-				var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-				var xx = this1.x;
-				var yy = this1.y;
-				this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-				this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-				p = this1;
-			}
-			if(this.collider.testPoint(p.x,p.y)) {
-				if(!this.hovered) {
-					this.hovered = true;
-					var tmp1 = HxOverrides.iter(this.onOver._callbacks);
-					while(tmp1.hasNext()) tmp1.next().cbFunction(this);
-				}
-				if(touch.duration == 0) {
-					var tmp2 = HxOverrides.iter(this.onPush._callbacks);
-					while(tmp2.hasNext()) tmp2.next().cbFunction(this,touch.id);
-				} else if(touch.justEnded) {
-					var tmp3 = HxOverrides.iter(this.onRelease._callbacks);
-					while(tmp3.hasNext()) tmp3.next().cbFunction(this,touch.id);
-				}
-				this._touched = true;
-			}
-		}
-	}
-	,get_pushed: function() {
-		if(!this._touched) {
-			return this._mouseHovered;
-		} else {
-			return true;
-		}
+	,test: function(x,y) {
+		return this.collider.testPoint(x,y);
 	}
 	,__class__: kala_behaviors_input_BasicButtonInteraction
-	,__properties__: {get_pushed:"get_pushed"}
 });
 var kala_behaviors_input_ButtonInteraction = function(object,collider,objectRectScale) {
 	if(objectRectScale == null) {
 		objectRectScale = 0;
 	}
-	kala_behaviors_Behavior.call(this);
+	kala_behaviors_input_BaseButtonInteraction.call(this,null,objectRectScale);
 	this.collider = collider;
-	var handle = new kala_CallbackHandle();
-	this._cbHandles.push(handle);
-	this.onPush = handle;
-	var handle1 = new kala_CallbackHandle();
-	this._cbHandles.push(handle1);
-	this.onRelease = handle1;
-	var handle2 = new kala_CallbackHandle();
-	this._cbHandles.push(handle2);
-	this.onOver = handle2;
-	var handle3 = new kala_CallbackHandle();
-	this._cbHandles.push(handle3);
-	this.onOut = handle3;
 	if(object != null) {
 		this.addTo(object);
 		if(objectRectScale > 0) {
@@ -14749,54 +14821,33 @@ var kala_behaviors_input_ButtonInteraction = function(object,collider,objectRect
 };
 $hxClasses["kala.behaviors.input.ButtonInteraction"] = kala_behaviors_input_ButtonInteraction;
 kala_behaviors_input_ButtonInteraction.__name__ = ["kala","behaviors","input","ButtonInteraction"];
-kala_behaviors_input_ButtonInteraction.__super__ = kala_behaviors_Behavior;
-kala_behaviors_input_ButtonInteraction.prototype = $extend(kala_behaviors_Behavior.prototype,{
+kala_behaviors_input_ButtonInteraction.__super__ = kala_behaviors_input_BaseButtonInteraction;
+kala_behaviors_input_ButtonInteraction.prototype = $extend(kala_behaviors_input_BaseButtonInteraction.prototype,{
 	collider: null
-	,active: null
-	,hovered: null
-	,onPush: null
-	,onRelease: null
-	,onOver: null
-	,onOut: null
-	,view: null
-	,disableMouseOnMobile: null
-	,_mouseHovered: null
-	,_touched: null
 	,reset: function() {
-		kala_behaviors_Behavior.prototype.reset.call(this);
-		this.active = true;
-		this.hovered = this._mouseHovered = this._touched = false;
-		this.disableMouseOnMobile = true;
-		this.view = null;
+		kala_behaviors_input_BaseButtonInteraction.prototype.reset.call(this);
 		if(this.collider != null) {
 			this.collider.reset();
 		}
 	}
 	,destroy: function() {
-		kala_behaviors_Behavior.prototype.destroy.call(this);
+		kala_behaviors_input_BaseButtonInteraction.prototype.destroy.call(this);
 		this.collider = null;
-		this.view = null;
-		this.onPush = null;
-		this.onRelease = null;
-		this.onOver = null;
-		this.onOut = null;
 	}
 	,addTo: function(object) {
-		kala_behaviors_Behavior.prototype.addTo.call(this,object);
+		kala_behaviors_input_BaseButtonInteraction.prototype.addTo.call(this,object);
 		if(this.collider == null) {
 			this.collider = new kala_behaviors_collision_transformable_Collider(object);
 		} else {
 			this.collider.addTo(object);
 		}
-		object.onPostUpdate._callbacks.push(new kala_Callback($bind(this,this.update),this));
 		return this;
 	}
 	,remove: function() {
 		if(this.object != null) {
 			this.collider.remove();
-			this.object.onPostUpdate.removePrivateCB(this,$bind(this,this.update));
 		}
-		kala_behaviors_Behavior.prototype.remove.call(this);
+		kala_behaviors_input_BaseButtonInteraction.prototype.remove.call(this);
 	}
 	,addCircleMask: function(x,y,radius) {
 		return this.collider.addCircle(x,y,radius);
@@ -14818,138 +14869,10 @@ kala_behaviors_input_ButtonInteraction.prototype = $extend(kala_behaviors_Behavi
 		this.collider._shapes.push(shape);
 		return shape;
 	}
-	,update: function(obj,elapsed) {
-		if(!this.active) {
-			return;
-		}
-		if(!this.disableMouseOnMobile || !kha_SystemImpl.mobile) {
-			this.updateMouse();
-		}
-		this.updateTouch();
-		if(this.hovered && !this._touched && !this._mouseHovered) {
-			this.hovered = false;
-			var tmp = HxOverrides.iter(this.onOut._callbacks);
-			while(tmp.hasNext()) tmp.next().cbFunction(this);
-		}
-	}
-	,updateMouse: function() {
-		var p;
-		if(this.view == null) {
-			p = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-		} else {
-			var this1 = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-			var _this = this.view._cachedDrawingMatrix;
-			var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-			var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-			var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-			var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-			if(Math.abs(det) < 0.000001) {
-				throw new js__$Boot_HaxeError("determinant is too small");
-			}
-			var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-			var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-			var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-			var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-			var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-			var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-			var invdet = 1.0 / det;
-			var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-			var xx = this1.x;
-			var yy = this1.y;
-			this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-			this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-			p = this1;
-		}
-		if(this.collider.testPoint(p.x,p.y)) {
-			if(!this.hovered) {
-				this.hovered = true;
-				var tmp = HxOverrides.iter(this.onOver._callbacks);
-				while(tmp.hasNext()) tmp.next().cbFunction(this);
-			}
-			if(kala_input_Mouse.LEFT.duration == 0) {
-				var tmp1 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp1.hasNext()) tmp1.next().cbFunction(this,1);
-			} else if(kala_input_Mouse.LEFT.justReleased) {
-				var tmp2 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp2.hasNext()) tmp2.next().cbFunction(this,1);
-			}
-			if(kala_input_Mouse.MIDDLE.duration == 0) {
-				var tmp3 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp3.hasNext()) tmp3.next().cbFunction(this,2);
-			} else if(kala_input_Mouse.MIDDLE.justReleased) {
-				var tmp4 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp4.hasNext()) tmp4.next().cbFunction(this,2);
-			}
-			if(kala_input_Mouse.RIGHT.duration == 0) {
-				var tmp5 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp5.hasNext()) tmp5.next().cbFunction(this,3);
-			} else if(kala_input_Mouse.RIGHT.justReleased) {
-				var tmp6 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp6.hasNext()) tmp6.next().cbFunction(this,3);
-			}
-			this._mouseHovered = true;
-		} else {
-			this._mouseHovered = false;
-		}
-	}
-	,updateTouch: function() {
-		this._touched = false;
-		var p;
-		var tmp = kala_input_Touch.touches.iterator();
-		while(tmp.hasNext()) {
-			var touch = tmp.next();
-			if(this.view == null) {
-				p = new kha_math_FastVector2(touch.x,touch.y);
-			} else {
-				var this1 = new kha_math_FastVector2(touch.x,touch.y);
-				var _this = this.view._cachedDrawingMatrix;
-				var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-				var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-				var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-				var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-				if(Math.abs(det) < 0.000001) {
-					throw new js__$Boot_HaxeError("determinant is too small");
-				}
-				var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-				var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-				var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-				var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-				var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-				var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-				var invdet = 1.0 / det;
-				var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-				var xx = this1.x;
-				var yy = this1.y;
-				this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-				this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-				p = this1;
-			}
-			if(this.collider.testPoint(p.x,p.y)) {
-				if(!this.hovered) {
-					this.hovered = true;
-					var tmp1 = HxOverrides.iter(this.onOver._callbacks);
-					while(tmp1.hasNext()) tmp1.next().cbFunction(this);
-				}
-				if(touch.duration == 0) {
-					var tmp2 = HxOverrides.iter(this.onPush._callbacks);
-					while(tmp2.hasNext()) tmp2.next().cbFunction(this,touch.id);
-				} else if(touch.justEnded) {
-					var tmp3 = HxOverrides.iter(this.onRelease._callbacks);
-					while(tmp3.hasNext()) tmp3.next().cbFunction(this,touch.id);
-				}
-				this._touched = true;
-			}
-		}
-	}
-	,get_pushed: function() {
-		if(!this._touched) {
-			return this._mouseHovered;
-		} else {
-			return true;
-		}
+	,test: function(x,y) {
+		return this.collider.testPoint(x,y);
 	}
 	,__class__: kala_behaviors_input_ButtonInteraction
-	,__properties__: {get_pushed:"get_pushed"}
 });
 var kala_debug_Debug = function() { };
 $hxClasses["kala.debug.Debug"] = kala_debug_Debug;
@@ -17976,12 +17899,11 @@ kala_objects_shapes_Rectangle.prototype = $extend(kala_objects_shapes_Shape.prot
 	}
 	,__class__: kala_objects_shapes_Rectangle
 });
-var kala_objects_sprite_BasicButtonSprite = function(image,frameX,frameY,frameWidth,frameHeight,animated) {
+var kala_objects_sprite_BaseButtonSprite = function(image,frameX,frameY,frameWidth,frameHeight,animated) {
 	if(animated == null) {
 		animated = false;
 	}
 	kala_objects_sprite_Sprite.call(this,image,frameX,frameY,frameWidth,frameHeight,animated);
-	this.collider = new kala_behaviors_collision_basic_Collider(this);
 	var handle = new kala_CallbackHandle();
 	this._cbHandles.push(handle);
 	this.onPush = handle;
@@ -17995,16 +17917,19 @@ var kala_objects_sprite_BasicButtonSprite = function(image,frameX,frameY,frameWi
 	this._cbHandles.push(handle3);
 	this.onOut = handle3;
 };
-$hxClasses["kala.objects.sprite.BasicButtonSprite"] = kala_objects_sprite_BasicButtonSprite;
-kala_objects_sprite_BasicButtonSprite.__name__ = ["kala","objects","sprite","BasicButtonSprite"];
-kala_objects_sprite_BasicButtonSprite.__super__ = kala_objects_sprite_Sprite;
-kala_objects_sprite_BasicButtonSprite.prototype = $extend(kala_objects_sprite_Sprite.prototype,{
-	collider: null
-	,hovered: null
+$hxClasses["kala.objects.sprite.BaseButtonSprite"] = kala_objects_sprite_BaseButtonSprite;
+kala_objects_sprite_BaseButtonSprite.__name__ = ["kala","objects","sprite","BaseButtonSprite"];
+kala_objects_sprite_BaseButtonSprite.__super__ = kala_objects_sprite_Sprite;
+kala_objects_sprite_BaseButtonSprite.prototype = $extend(kala_objects_sprite_Sprite.prototype,{
+	hovered: null
 	,onPush: null
 	,onRelease: null
 	,onOver: null
 	,onOut: null
+	,onPushRequestFullscreen: null
+	,onReleaseRequestFullscreen: null
+	,onPushOpenURL: null
+	,onReleaseOpenURL: null
 	,view: null
 	,disableMouseOnMobile: null
 	,_mouseHovered: null
@@ -18017,16 +17942,14 @@ kala_objects_sprite_BasicButtonSprite.prototype = $extend(kala_objects_sprite_Sp
 		this.hovered = this._mouseHovered = this._touched = false;
 		this.disableMouseOnMobile = true;
 		this.view = null;
-		if(this.collider != null) {
-			this.collider.reset();
-		}
+		this.onPushRequestFullscreen = this.onReleaseRequestFullscreen = false;
+		this.onPushOpenURL = this.onReleaseOpenURL = null;
 	}
 	,destroy: function(destroyBehaviors) {
 		if(destroyBehaviors == null) {
 			destroyBehaviors = true;
 		}
 		kala_objects_sprite_Sprite.prototype.destroy.call(this,destroyBehaviors);
-		this.collider = null;
 		this.view = null;
 		this.onPush = null;
 		this.onRelease = null;
@@ -18039,10 +17962,233 @@ kala_objects_sprite_BasicButtonSprite.prototype = $extend(kala_objects_sprite_Sp
 		}
 		this.updateTouch();
 		if(this.hovered && !this._touched && !this._mouseHovered) {
+			kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.openURLOnPush));
+			kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.openURLOnRelease));
+			kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.requestFullscreen));
+			kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.requestFullscreen));
 			this.hovered = false;
 			var tmp = HxOverrides.iter(this.onOut._callbacks);
 			while(tmp.hasNext()) tmp.next().cbFunction(this);
 		}
+	}
+	,test: function(x,y) {
+		return false;
+	}
+	,updateMouse: function() {
+		var p;
+		if(this.view == null) {
+			p = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
+		} else {
+			var this1 = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
+			var _this = this.view._cachedDrawingMatrix;
+			var c00 = _this._11 * _this._22 - _this._21 * _this._12;
+			var c01 = _this._10 * _this._22 - _this._20 * _this._12;
+			var c02 = _this._10 * _this._21 - _this._20 * _this._11;
+			var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
+			if(Math.abs(det) < 0.000001) {
+				throw new js__$Boot_HaxeError("determinant is too small");
+			}
+			var c10 = _this._01 * _this._22 - _this._21 * _this._02;
+			var c11 = _this._00 * _this._22 - _this._20 * _this._02;
+			var c12 = _this._00 * _this._21 - _this._20 * _this._01;
+			var c20 = _this._01 * _this._12 - _this._11 * _this._02;
+			var c21 = _this._00 * _this._12 - _this._10 * _this._02;
+			var c22 = _this._00 * _this._11 - _this._10 * _this._01;
+			var invdet = 1.0 / det;
+			var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
+			var xx = this1.x;
+			var yy = this1.y;
+			this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
+			this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
+			p = this1;
+		}
+		if(this.test(p.x,p.y)) {
+			if(!this.hovered) {
+				if(this.onPushOpenURL != null) {
+					kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.openURLOnPush));
+				}
+				if(this.onReleaseOpenURL != null) {
+					kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.openURLOnRelease));
+				}
+				if(this.onPushRequestFullscreen) {
+					kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.requestFullscreen));
+				}
+				if(this.onReleaseRequestFullscreen) {
+					kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.requestFullscreen));
+				}
+				this.hovered = true;
+				var tmp = HxOverrides.iter(this.onOver._callbacks);
+				while(tmp.hasNext()) tmp.next().cbFunction(this);
+			}
+			if(kala_input_Mouse.LEFT.duration == 0) {
+				var tmp1 = HxOverrides.iter(this.onPush._callbacks);
+				while(tmp1.hasNext()) tmp1.next().cbFunction(this,1);
+			} else if(kala_input_Mouse.LEFT.justReleased) {
+				var tmp2 = HxOverrides.iter(this.onRelease._callbacks);
+				while(tmp2.hasNext()) tmp2.next().cbFunction(this,1);
+			}
+			if(kala_input_Mouse.MIDDLE.duration == 0) {
+				var tmp3 = HxOverrides.iter(this.onPush._callbacks);
+				while(tmp3.hasNext()) tmp3.next().cbFunction(this,2);
+			} else if(kala_input_Mouse.MIDDLE.justReleased) {
+				var tmp4 = HxOverrides.iter(this.onRelease._callbacks);
+				while(tmp4.hasNext()) tmp4.next().cbFunction(this,2);
+			}
+			if(kala_input_Mouse.RIGHT.duration == 0) {
+				var tmp5 = HxOverrides.iter(this.onPush._callbacks);
+				while(tmp5.hasNext()) tmp5.next().cbFunction(this,3);
+			} else if(kala_input_Mouse.RIGHT.justReleased) {
+				var tmp6 = HxOverrides.iter(this.onRelease._callbacks);
+				while(tmp6.hasNext()) tmp6.next().cbFunction(this,3);
+			}
+			this._mouseHovered = true;
+		} else {
+			this._mouseHovered = false;
+		}
+	}
+	,updateTouch: function() {
+		this._touched = false;
+		var p;
+		var tmp = kala_input_Touch.touches.iterator();
+		while(tmp.hasNext()) {
+			var touch = tmp.next();
+			if(this.view == null) {
+				p = new kha_math_FastVector2(touch.x,touch.y);
+			} else {
+				var this1 = new kha_math_FastVector2(touch.x,touch.y);
+				var _this = this.view._cachedDrawingMatrix;
+				var c00 = _this._11 * _this._22 - _this._21 * _this._12;
+				var c01 = _this._10 * _this._22 - _this._20 * _this._12;
+				var c02 = _this._10 * _this._21 - _this._20 * _this._11;
+				var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
+				if(Math.abs(det) < 0.000001) {
+					throw new js__$Boot_HaxeError("determinant is too small");
+				}
+				var c10 = _this._01 * _this._22 - _this._21 * _this._02;
+				var c11 = _this._00 * _this._22 - _this._20 * _this._02;
+				var c12 = _this._00 * _this._21 - _this._20 * _this._01;
+				var c20 = _this._01 * _this._12 - _this._11 * _this._02;
+				var c21 = _this._00 * _this._12 - _this._10 * _this._02;
+				var c22 = _this._00 * _this._11 - _this._10 * _this._01;
+				var invdet = 1.0 / det;
+				var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
+				var xx = this1.x;
+				var yy = this1.y;
+				this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
+				this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
+				p = this1;
+			}
+			if(this.test(p.x,p.y)) {
+				if(!this.hovered) {
+					if(this.onPushOpenURL != null) {
+						kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.openURLOnPush));
+					}
+					if(this.onReleaseOpenURL != null) {
+						kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.openURLOnRelease));
+					}
+					if(this.onPushRequestFullscreen) {
+						kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.requestFullscreen));
+					}
+					if(this.onReleaseRequestFullscreen) {
+						kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.requestFullscreen));
+					}
+					this.hovered = true;
+					var tmp1 = HxOverrides.iter(this.onOver._callbacks);
+					while(tmp1.hasNext()) tmp1.next().cbFunction(this);
+				}
+				if(touch.duration == 0) {
+					var id = touch.id;
+					var tmp2 = HxOverrides.iter(this.onPush._callbacks);
+					while(tmp2.hasNext()) tmp2.next().cbFunction(this,id);
+				} else if(touch.justEnded) {
+					var id1 = touch.id;
+					var tmp3 = HxOverrides.iter(this.onRelease._callbacks);
+					while(tmp3.hasNext()) tmp3.next().cbFunction(this,id1);
+				}
+				this._touched = true;
+			}
+		}
+	}
+	,callOnOver: function() {
+		if(this.onPushOpenURL != null) {
+			kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.openURLOnPush));
+		}
+		if(this.onReleaseOpenURL != null) {
+			kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.openURLOnRelease));
+		}
+		if(this.onPushRequestFullscreen) {
+			kala_Kala.html5.canvas.addEventListener("click",$bind(this,this.requestFullscreen));
+		}
+		if(this.onReleaseRequestFullscreen) {
+			kala_Kala.html5.canvas.addEventListener("mouseup",$bind(this,this.requestFullscreen));
+		}
+		this.hovered = true;
+		var tmp = HxOverrides.iter(this.onOver._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this);
+	}
+	,callOnOut: function() {
+		kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.openURLOnPush));
+		kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.openURLOnRelease));
+		kala_Kala.html5.canvas.removeEventListener("click",$bind(this,this.requestFullscreen));
+		kala_Kala.html5.canvas.removeEventListener("mouseup",$bind(this,this.requestFullscreen));
+		this.hovered = false;
+		var tmp = HxOverrides.iter(this.onOut._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this);
+	}
+	,callOnPush: function(id) {
+		var tmp = HxOverrides.iter(this.onPush._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this,id);
+	}
+	,callOnRelease: function(id) {
+		var tmp = HxOverrides.iter(this.onRelease._callbacks);
+		while(tmp.hasNext()) tmp.next().cbFunction(this,id);
+	}
+	,requestFullscreen: function() {
+		kha_SystemImpl.requestFullscreen();
+	}
+	,openURLOnPush: function() {
+		window.open(this.onPushOpenURL,"_blank");
+	}
+	,openURLOnRelease: function() {
+		window.open(this.onReleaseOpenURL,"_blank");
+	}
+	,get_pushed: function() {
+		if(!this._touched) {
+			return this._mouseHovered;
+		} else {
+			return true;
+		}
+	}
+	,__class__: kala_objects_sprite_BaseButtonSprite
+	,__properties__: $extend(kala_objects_sprite_Sprite.prototype.__properties__,{get_pushed:"get_pushed"})
+});
+var kala_objects_sprite_BasicButtonSprite = function(image,frameX,frameY,frameWidth,frameHeight,animated) {
+	if(animated == null) {
+		animated = false;
+	}
+	kala_objects_sprite_BaseButtonSprite.call(this,image,frameX,frameY,frameWidth,frameHeight,animated);
+	this.collider = new kala_behaviors_collision_basic_Collider(this);
+};
+$hxClasses["kala.objects.sprite.BasicButtonSprite"] = kala_objects_sprite_BasicButtonSprite;
+kala_objects_sprite_BasicButtonSprite.__name__ = ["kala","objects","sprite","BasicButtonSprite"];
+kala_objects_sprite_BasicButtonSprite.__super__ = kala_objects_sprite_BaseButtonSprite;
+kala_objects_sprite_BasicButtonSprite.prototype = $extend(kala_objects_sprite_BaseButtonSprite.prototype,{
+	collider: null
+	,reset: function(resetBehaviors) {
+		if(resetBehaviors == null) {
+			resetBehaviors = false;
+		}
+		kala_objects_sprite_BaseButtonSprite.prototype.reset.call(this,resetBehaviors);
+		if(this.collider != null) {
+			this.collider.reset();
+		}
+	}
+	,destroy: function(destroyBehaviors) {
+		if(destroyBehaviors == null) {
+			destroyBehaviors = true;
+		}
+		kala_objects_sprite_BaseButtonSprite.prototype.destroy.call(this,destroyBehaviors);
+		this.collider = null;
 	}
 	,addCircleMask: function(x,y,radius) {
 		var circle = kala_behaviors_collision_basic_shapes_CollisionCircle.pool.get();
@@ -18084,166 +18230,28 @@ kala_objects_sprite_BasicButtonSprite.prototype = $extend(kala_objects_sprite_Sp
 		_this2.y = y;
 		return rect;
 	}
-	,updateMouse: function() {
-		var p;
-		if(this.view == null) {
-			p = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-		} else {
-			var this1 = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-			var _this = this.view._cachedDrawingMatrix;
-			var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-			var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-			var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-			var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-			if(Math.abs(det) < 0.000001) {
-				throw new js__$Boot_HaxeError("determinant is too small");
-			}
-			var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-			var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-			var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-			var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-			var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-			var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-			var invdet = 1.0 / det;
-			var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-			var xx = this1.x;
-			var yy = this1.y;
-			this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-			this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-			p = this1;
-		}
-		if(this.collider.testPoint(p.x,p.y)) {
-			if(!this.hovered) {
-				this.hovered = true;
-				var tmp = HxOverrides.iter(this.onOver._callbacks);
-				while(tmp.hasNext()) tmp.next().cbFunction(this);
-			}
-			if(kala_input_Mouse.LEFT.duration == 0) {
-				var tmp1 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp1.hasNext()) tmp1.next().cbFunction(this,1);
-			} else if(kala_input_Mouse.LEFT.justReleased) {
-				var tmp2 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp2.hasNext()) tmp2.next().cbFunction(this,1);
-			}
-			if(kala_input_Mouse.MIDDLE.duration == 0) {
-				var tmp3 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp3.hasNext()) tmp3.next().cbFunction(this,2);
-			} else if(kala_input_Mouse.MIDDLE.justReleased) {
-				var tmp4 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp4.hasNext()) tmp4.next().cbFunction(this,2);
-			}
-			if(kala_input_Mouse.RIGHT.duration == 0) {
-				var tmp5 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp5.hasNext()) tmp5.next().cbFunction(this,3);
-			} else if(kala_input_Mouse.RIGHT.justReleased) {
-				var tmp6 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp6.hasNext()) tmp6.next().cbFunction(this,3);
-			}
-			this._mouseHovered = true;
-		} else {
-			this._mouseHovered = false;
-		}
-	}
-	,updateTouch: function() {
-		this._touched = false;
-		var p;
-		var tmp = kala_input_Touch.touches.iterator();
-		while(tmp.hasNext()) {
-			var touch = tmp.next();
-			if(this.view == null) {
-				p = new kha_math_FastVector2(touch.x,touch.y);
-			} else {
-				var this1 = new kha_math_FastVector2(touch.x,touch.y);
-				var _this = this.view._cachedDrawingMatrix;
-				var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-				var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-				var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-				var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-				if(Math.abs(det) < 0.000001) {
-					throw new js__$Boot_HaxeError("determinant is too small");
-				}
-				var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-				var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-				var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-				var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-				var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-				var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-				var invdet = 1.0 / det;
-				var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-				var xx = this1.x;
-				var yy = this1.y;
-				this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-				this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-				p = this1;
-			}
-			if(this.collider.testPoint(p.x,p.y)) {
-				if(!this.hovered) {
-					this.hovered = true;
-					var tmp1 = HxOverrides.iter(this.onOver._callbacks);
-					while(tmp1.hasNext()) tmp1.next().cbFunction(this);
-				}
-				if(touch.duration == 0) {
-					var tmp2 = HxOverrides.iter(this.onPush._callbacks);
-					while(tmp2.hasNext()) tmp2.next().cbFunction(this,touch.id);
-				} else if(touch.justEnded) {
-					var tmp3 = HxOverrides.iter(this.onRelease._callbacks);
-					while(tmp3.hasNext()) tmp3.next().cbFunction(this,touch.id);
-				}
-				this._touched = true;
-			}
-		}
-	}
-	,get_pushed: function() {
-		if(!this._touched) {
-			return this._mouseHovered;
-		} else {
-			return true;
-		}
+	,test: function(x,y) {
+		return this.collider.testPoint(x,y);
 	}
 	,__class__: kala_objects_sprite_BasicButtonSprite
-	,__properties__: $extend(kala_objects_sprite_Sprite.prototype.__properties__,{get_pushed:"get_pushed"})
 });
 var kala_objects_sprite_ButtonSprite = function(image,frameX,frameY,frameWidth,frameHeight,animated) {
 	if(animated == null) {
 		animated = false;
 	}
-	kala_objects_sprite_Sprite.call(this,image,frameX,frameY,frameWidth,frameHeight,animated);
+	kala_objects_sprite_BaseButtonSprite.call(this,image,frameX,frameY,frameWidth,frameHeight,animated);
 	this.collider = new kala_behaviors_collision_transformable_Collider(this);
-	var handle = new kala_CallbackHandle();
-	this._cbHandles.push(handle);
-	this.onPush = handle;
-	var handle1 = new kala_CallbackHandle();
-	this._cbHandles.push(handle1);
-	this.onRelease = handle1;
-	var handle2 = new kala_CallbackHandle();
-	this._cbHandles.push(handle2);
-	this.onOver = handle2;
-	var handle3 = new kala_CallbackHandle();
-	this._cbHandles.push(handle3);
-	this.onOut = handle3;
 };
 $hxClasses["kala.objects.sprite.ButtonSprite"] = kala_objects_sprite_ButtonSprite;
 kala_objects_sprite_ButtonSprite.__name__ = ["kala","objects","sprite","ButtonSprite"];
-kala_objects_sprite_ButtonSprite.__super__ = kala_objects_sprite_Sprite;
-kala_objects_sprite_ButtonSprite.prototype = $extend(kala_objects_sprite_Sprite.prototype,{
+kala_objects_sprite_ButtonSprite.__super__ = kala_objects_sprite_BaseButtonSprite;
+kala_objects_sprite_ButtonSprite.prototype = $extend(kala_objects_sprite_BaseButtonSprite.prototype,{
 	collider: null
-	,hovered: null
-	,onPush: null
-	,onRelease: null
-	,onOver: null
-	,onOut: null
-	,view: null
-	,disableMouseOnMobile: null
-	,_mouseHovered: null
-	,_touched: null
 	,reset: function(resetBehaviors) {
 		if(resetBehaviors == null) {
 			resetBehaviors = false;
 		}
-		kala_objects_sprite_Sprite.prototype.reset.call(this,resetBehaviors);
-		this.hovered = this._mouseHovered = this._touched = false;
-		this.disableMouseOnMobile = true;
-		this.view = null;
+		kala_objects_sprite_BaseButtonSprite.prototype.reset.call(this,resetBehaviors);
 		if(this.collider != null) {
 			this.collider.reset();
 		}
@@ -18252,24 +18260,8 @@ kala_objects_sprite_ButtonSprite.prototype = $extend(kala_objects_sprite_Sprite.
 		if(destroyBehaviors == null) {
 			destroyBehaviors = true;
 		}
-		kala_objects_sprite_Sprite.prototype.destroy.call(this,destroyBehaviors);
+		kala_objects_sprite_BaseButtonSprite.prototype.destroy.call(this,destroyBehaviors);
 		this.collider = null;
-		this.view = null;
-		this.onPush = null;
-		this.onRelease = null;
-		this.onOver = null;
-		this.onOut = null;
-	}
-	,update: function(elapsed) {
-		if(!this.disableMouseOnMobile || !kha_SystemImpl.mobile) {
-			this.updateMouse();
-		}
-		this.updateTouch();
-		if(this.hovered && !this._touched && !this._mouseHovered) {
-			this.hovered = false;
-			var tmp = HxOverrides.iter(this.onOut._callbacks);
-			while(tmp.hasNext()) tmp.next().cbFunction(this);
-		}
 	}
 	,addCircleMask: function(x,y,radius) {
 		return this.collider.addCircle(x,y,radius);
@@ -18291,124 +18283,10 @@ kala_objects_sprite_ButtonSprite.prototype = $extend(kala_objects_sprite_Sprite.
 		this.collider._shapes.push(shape);
 		return shape;
 	}
-	,updateMouse: function() {
-		var p;
-		if(this.view == null) {
-			p = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-		} else {
-			var this1 = new kha_math_FastVector2(kala_input_Mouse.x,kala_input_Mouse.y);
-			var _this = this.view._cachedDrawingMatrix;
-			var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-			var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-			var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-			var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-			if(Math.abs(det) < 0.000001) {
-				throw new js__$Boot_HaxeError("determinant is too small");
-			}
-			var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-			var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-			var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-			var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-			var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-			var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-			var invdet = 1.0 / det;
-			var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-			var xx = this1.x;
-			var yy = this1.y;
-			this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-			this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-			p = this1;
-		}
-		if(this.collider.testPoint(p.x,p.y)) {
-			if(!this.hovered) {
-				this.hovered = true;
-				var tmp = HxOverrides.iter(this.onOver._callbacks);
-				while(tmp.hasNext()) tmp.next().cbFunction(this);
-			}
-			if(kala_input_Mouse.LEFT.duration == 0) {
-				var tmp1 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp1.hasNext()) tmp1.next().cbFunction(this,1);
-			} else if(kala_input_Mouse.LEFT.justReleased) {
-				var tmp2 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp2.hasNext()) tmp2.next().cbFunction(this,1);
-			}
-			if(kala_input_Mouse.MIDDLE.duration == 0) {
-				var tmp3 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp3.hasNext()) tmp3.next().cbFunction(this,2);
-			} else if(kala_input_Mouse.MIDDLE.justReleased) {
-				var tmp4 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp4.hasNext()) tmp4.next().cbFunction(this,2);
-			}
-			if(kala_input_Mouse.RIGHT.duration == 0) {
-				var tmp5 = HxOverrides.iter(this.onPush._callbacks);
-				while(tmp5.hasNext()) tmp5.next().cbFunction(this,3);
-			} else if(kala_input_Mouse.RIGHT.justReleased) {
-				var tmp6 = HxOverrides.iter(this.onRelease._callbacks);
-				while(tmp6.hasNext()) tmp6.next().cbFunction(this,3);
-			}
-			this._mouseHovered = true;
-		} else {
-			this._mouseHovered = false;
-		}
-	}
-	,updateTouch: function() {
-		this._touched = false;
-		var p;
-		var tmp = kala_input_Touch.touches.iterator();
-		while(tmp.hasNext()) {
-			var touch = tmp.next();
-			if(this.view == null) {
-				p = new kha_math_FastVector2(touch.x,touch.y);
-			} else {
-				var this1 = new kha_math_FastVector2(touch.x,touch.y);
-				var _this = this.view._cachedDrawingMatrix;
-				var c00 = _this._11 * _this._22 - _this._21 * _this._12;
-				var c01 = _this._10 * _this._22 - _this._20 * _this._12;
-				var c02 = _this._10 * _this._21 - _this._20 * _this._11;
-				var det = _this._00 * c00 - _this._01 * c01 + _this._02 * c02;
-				if(Math.abs(det) < 0.000001) {
-					throw new js__$Boot_HaxeError("determinant is too small");
-				}
-				var c10 = _this._01 * _this._22 - _this._21 * _this._02;
-				var c11 = _this._00 * _this._22 - _this._20 * _this._02;
-				var c12 = _this._00 * _this._21 - _this._20 * _this._01;
-				var c20 = _this._01 * _this._12 - _this._11 * _this._02;
-				var c21 = _this._00 * _this._12 - _this._10 * _this._02;
-				var c22 = _this._00 * _this._11 - _this._10 * _this._01;
-				var invdet = 1.0 / det;
-				var matrix = new kha_math_FastMatrix3(c00 * invdet,-c01 * invdet,c02 * invdet,-c10 * invdet,c11 * invdet,-c12 * invdet,c20 * invdet,-c21 * invdet,c22 * invdet);
-				var xx = this1.x;
-				var yy = this1.y;
-				this1.x = xx * matrix._00 + yy * matrix._10 + matrix._20;
-				this1.y = xx * matrix._01 + yy * matrix._11 + matrix._21;
-				p = this1;
-			}
-			if(this.collider.testPoint(p.x,p.y)) {
-				if(!this.hovered) {
-					this.hovered = true;
-					var tmp1 = HxOverrides.iter(this.onOver._callbacks);
-					while(tmp1.hasNext()) tmp1.next().cbFunction(this);
-				}
-				if(touch.duration == 0) {
-					var tmp2 = HxOverrides.iter(this.onPush._callbacks);
-					while(tmp2.hasNext()) tmp2.next().cbFunction(this,touch.id);
-				} else if(touch.justEnded) {
-					var tmp3 = HxOverrides.iter(this.onRelease._callbacks);
-					while(tmp3.hasNext()) tmp3.next().cbFunction(this,touch.id);
-				}
-				this._touched = true;
-			}
-		}
-	}
-	,get_pushed: function() {
-		if(!this._touched) {
-			return this._mouseHovered;
-		} else {
-			return true;
-		}
+	,test: function(x,y) {
+		return this.collider.testPoint(x,y);
 	}
 	,__class__: kala_objects_sprite_ButtonSprite
-	,__properties__: $extend(kala_objects_sprite_Sprite.prototype.__properties__,{get_pushed:"get_pushed"})
 });
 var kala_objects_sprite_SpriteData = function(key,image,frames,animDelay) {
 	this.key = key;
@@ -19031,6 +18909,40 @@ kala_objects_text_TextAlign.CENTER.__enum__ = kala_objects_text_TextAlign;
 kala_objects_text_TextAlign.JUSTIFY = ["JUSTIFY",3];
 kala_objects_text_TextAlign.JUSTIFY.toString = $estr;
 kala_objects_text_TextAlign.JUSTIFY.__enum__ = kala_objects_text_TextAlign;
+var kala_system_HTML5 = function() {
+	this.canvas = window.document.getElementById("khanvas");
+};
+$hxClasses["kala.system.HTML5"] = kala_system_HTML5;
+kala_system_HTML5.__name__ = ["kala","system","HTML5"];
+kala_system_HTML5.prototype = {
+	canvas: null
+	,fillPage: function() {
+		var _gthis = this;
+		var node = window.document.createElement("meta");
+		node.setAttribute("name","viewport");
+		node.setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no");
+		window.document.head.appendChild(node);
+		var $window = window;
+		var resizeCanvas = function() {
+			_gthis.canvas.style.width = $window.innerWidth;
+			$window.setTimeout(function() {
+				_gthis.canvas.style.height = $window.innerHeight;
+			},0);
+		};
+		$window.addEventListener("resize",resizeCanvas,false);
+		$window.addEventListener("orientationchange",resizeCanvas,false);
+		window.document.body.style.margin = "0";
+		window.document.body.style.overflow = "hidden";
+		this.canvas.style.position = "absolute";
+		this.canvas.style.left = this.canvas.style.top = "0";
+		this.canvas.style.width = this.canvas.style.height = "100%";
+	}
+	,get_mobile: function() {
+		return kha_SystemImpl.mobile;
+	}
+	,__class__: kala_system_HTML5
+	,__properties__: {get_mobile:"get_mobile"}
+};
 var kala_util_StringUtil = function() { };
 $hxClasses["kala.util.StringUtil"] = kala_util_StringUtil;
 kala_util_StringUtil.__name__ = ["kala","util","StringUtil"];
@@ -19185,13 +19097,13 @@ kha_ImageList.prototype = {
 	,__class__: kha_ImageList
 };
 var kha_SoundList = function() {
-	this.names = ["Dissonant_Waltz","flap","bounce","lightning","upgrade","spawn"];
-	this.spawnDescription = { files : ["spawn.ogg"], type : "sound", name : "spawn"};
-	this.spawnName = "spawn";
-	this.spawn = null;
+	this.names = ["Dissonant_Waltz","flap","bounce","lightning","spawn","upgrade"];
 	this.upgradeDescription = { files : ["upgrade.ogg"], type : "sound", name : "upgrade"};
 	this.upgradeName = "upgrade";
 	this.upgrade = null;
+	this.spawnDescription = { files : ["spawn.ogg"], type : "sound", name : "spawn"};
+	this.spawnName = "spawn";
+	this.spawn = null;
 	this.lightningDescription = { files : ["lightning.ogg"], type : "sound", name : "lightning"};
 	this.lightningName = "lightning";
 	this.lightning = null;
@@ -19256,18 +19168,6 @@ kha_SoundList.prototype = {
 		this.lightning.unload();
 		this.lightning = null;
 	}
-	,upgrade: null
-	,upgradeName: null
-	,upgradeDescription: null
-	,upgradeLoad: function(done) {
-		kha_Assets.loadSound("upgrade",function(sound) {
-			done();
-		});
-	}
-	,upgradeUnload: function() {
-		this.upgrade.unload();
-		this.upgrade = null;
-	}
 	,spawn: null
 	,spawnName: null
 	,spawnDescription: null
@@ -19280,6 +19180,18 @@ kha_SoundList.prototype = {
 		this.spawn.unload();
 		this.spawn = null;
 	}
+	,upgrade: null
+	,upgradeName: null
+	,upgradeDescription: null
+	,upgradeLoad: function(done) {
+		kha_Assets.loadSound("upgrade",function(sound) {
+			done();
+		});
+	}
+	,upgradeUnload: function() {
+		this.upgrade.unload();
+		this.upgrade = null;
+	}
 	,names: null
 	,__class__: kha_SoundList
 };
@@ -19291,10 +19203,10 @@ var kha_BlobList = function() {
 	this.Montserrat_SIL_Open_Font_License_txtDescription = { files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"};
 	this.Montserrat_SIL_Open_Font_License_txtName = "Montserrat_SIL_Open_Font_License_txt";
 	this.Montserrat_SIL_Open_Font_License_txt = null;
-	this.sprite_sheet_2_ssdDescription = { files : ["sprite_sheet_2_ssd"], type : "blob", name : "sprite_sheet_2_ssd"};
+	this.sprite_sheet_2_ssdDescription = { files : ["sprite_sheet_2.ssd"], type : "blob", name : "sprite_sheet_2_ssd"};
 	this.sprite_sheet_2_ssdName = "sprite_sheet_2_ssd";
 	this.sprite_sheet_2_ssd = null;
-	this.sprite_sheet_1_ssdDescription = { files : ["sprite_sheet_1_ssd"], type : "blob", name : "sprite_sheet_1_ssd"};
+	this.sprite_sheet_1_ssdDescription = { files : ["sprite_sheet_1.ssd"], type : "blob", name : "sprite_sheet_1_ssd"};
 	this.sprite_sheet_1_ssdName = "sprite_sheet_1_ssd";
 	this.sprite_sheet_1_ssd = null;
 };
@@ -20980,15 +20892,15 @@ kha_Shaders.init = function() {
 	var data2 = Reflect.field(kha_Shaders,"painter_image_fragData");
 	var bytes2 = haxe_Unserializer.run(data2);
 	kha_Shaders.painter_image_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes2),"painter_image_frag");
-	var data3 = Reflect.field(kha_Shaders,"painter_image_vertData");
+	var data3 = Reflect.field(kha_Shaders,"painter_text_vertData");
 	var bytes3 = haxe_Unserializer.run(data3);
-	kha_Shaders.painter_image_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes3),"painter_image_vert");
+	kha_Shaders.painter_text_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes3),"painter_text_vert");
 	var data4 = Reflect.field(kha_Shaders,"painter_text_fragData");
 	var bytes4 = haxe_Unserializer.run(data4);
 	kha_Shaders.painter_text_frag = new kha_graphics4_FragmentShader(kha_internal_BytesBlob.fromBytes(bytes4),"painter_text_frag");
-	var data5 = Reflect.field(kha_Shaders,"painter_text_vertData");
+	var data5 = Reflect.field(kha_Shaders,"painter_image_vertData");
 	var bytes5 = haxe_Unserializer.run(data5);
-	kha_Shaders.painter_text_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes5),"painter_text_vert");
+	kha_Shaders.painter_image_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes5),"painter_image_vert");
 	var data6 = Reflect.field(kha_Shaders,"painter_video_vertData");
 	var bytes6 = haxe_Unserializer.run(data6);
 	kha_Shaders.painter_video_vert = new kha_graphics4_VertexShader(kha_internal_BytesBlob.fromBytes(bytes6),"painter_video_vert");
@@ -38909,7 +38821,7 @@ var states_AnimatedText = function(x,y,text,rotSide,colors,coloredRange,rect,url
 		this.button.collider._shapes.push(rect1);
 		this.button.onOut._callbacks.push(new kala_Callback($bind(this,this.onOutHandle)));
 		this.button.onOver._callbacks.push(new kala_Callback($bind(this,this.onOverHandle)));
-		this.button.onRelease._callbacks.push(new kala_Callback($bind(this,this.onReleaseHandle)));
+		this.button.onReleaseOpenURL = url;
 		this.add(this.button);
 	}
 };
@@ -39075,9 +38987,6 @@ states_AnimatedText.prototype = $extend(kala_objects_group_Group.prototype,{
 		var _g = this.coloredRange.b;
 		while(_g1 < _g) this.members[_g1++].color = this.colors.b;
 	}
-	,onReleaseHandle: function(_,_1) {
-		window.open(this.url,"_blank");
-	}
 	,__class__: states_AnimatedText
 });
 var states_MainMenuState = function() {
@@ -39104,6 +39013,7 @@ var states_MainMenuState = function() {
 	this.playButton.onOver._callbacks.push(new kala_Callback($bind(this,this.onButtonHoveredHandle)));
 	this.playButton.onOut._callbacks.push(new kala_Callback($bind(this,this.onButtonOutHandle)));
 	this.playButton.onRelease._callbacks.push(new kala_Callback($bind(this,this.onButtonReleaseHandle)));
+	this.playButton.onReleaseRequestFullscreen = kha_SystemImpl.mobile;
 	this.buttonsGroup.add(this.playButton);
 	this.helpButton = new ui_Button("help",R.sheets.sprite_sheet_1.get("main_menu/help_button.png",R.images.sprite_sheet_1),true);
 	this.helpButton.onOver._callbacks.push(new kala_Callback($bind(this,this.onButtonHoveredHandle)));
@@ -39132,7 +39042,7 @@ var states_MainMenuState = function() {
 	this.androidButton.antialiasing = true;
 	this.androidButton.onOver._callbacks.push(new kala_Callback($bind(this,this.onButtonHoveredHandle)));
 	this.androidButton.onOut._callbacks.push(new kala_Callback($bind(this,this.onButtonOutHandle)));
-	this.androidButton.onRelease._callbacks.push(new kala_Callback($bind(this,this.onButtonReleaseHandle)));
+	this.androidButton.onReleaseOpenURL = "https://play.google.com/store/apps/details?id=me.haza.biodigit&hl=en";
 	this.buttonsGroup.add(this.androidButton);
 	this.playButton.position.x = 0.;
 	this.helpButton.position.x = 105.6;
@@ -39239,9 +39149,6 @@ states_MainMenuState.prototype = $extend(kala_objects_group_Group.prototype,{
 	}
 	,onButtonReleaseHandle: function(button,_) {
 		switch(button.data) {
-		case "android":
-			window.open("https://play.google.com/store/apps/details?id=me.haza.biodigit&hl=en","_blank");
-			break;
 		case "credit":
 			this.openCredit();
 			break;
@@ -40660,11 +40567,10 @@ kala_Kala.timeScale = 1;
 kala_Kala.width = 0;
 kala_Kala.height = 0;
 kala_Kala.bgColor = -16777216;
-kala_Kala.html5 = new kala_system_HTML5();
 kala_Kala._prvUpdateTime = 0;
 kala_asset_Assets.loader = new kala_asset_Loader();
 kala_asset_Assets.sheets = new kala_asset_SheetList();
-kala_asset_Assets.files = [{ files : ["Dissonant_Waltz.ogg"], type : "sound", name : "Dissonant_Waltz"},{ files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"},{ files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"},{ files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"},{ files : ["sprite_sheet_1_ssd"], type : "blob", name : "sprite_sheet_1_ssd"},{ files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"},{ files : ["sprite_sheet_2_ssd"], type : "blob", name : "sprite_sheet_2_ssd"},{ files : ["flap.ogg"], type : "sound", name : "flap"},{ files : ["bounce.ogg"], type : "sound", name : "bounce"},{ files : ["lightning.ogg"], type : "sound", name : "lightning"},{ files : ["upgrade.ogg"], type : "sound", name : "upgrade"},{ files : ["spawn.ogg"], type : "sound", name : "spawn"},{ files : ["Montserrat-Bold.ttf"], type : "font", name : "Montserrat_Bold"},{ files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"},{ files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"},{ files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"},{ inputs : [{ type : "vec4", name : "fragmentColor"}], uniforms : [], files : ["painter-colored.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_colored_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-colored.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_colored_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-image.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_image_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-image.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_image_vert"},{ inputs : [{ type : "vec4", name : "fragmentColor"},{ type : "vec2", name : "texCoord"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-text.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_text_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-text.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_text_vert"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-video.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_video_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-video.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_video_frag"}];
+kala_asset_Assets.files = [{ files : ["Dissonant_Waltz.ogg"], type : "sound", name : "Dissonant_Waltz"},{ files : ["background_blur.jpg"], original_height : 495, type : "image", original_width : 700, name : "background_blur"},{ files : ["invisible_pixel.png"], original_height : 1, type : "image", original_width : 1, name : "invisible_pixel"},{ files : ["sprite_sheet_1.png"], original_height : 1018, type : "image", original_width : 1740, name : "sprite_sheet_1"},{ files : ["sprite_sheet_1.ssd"], type : "blob", name : "sprite_sheet_1_ssd"},{ files : ["sprite_sheet_2.png"], original_height : 1895, type : "image", original_width : 1226, name : "sprite_sheet_2"},{ files : ["sprite_sheet_2.ssd"], type : "blob", name : "sprite_sheet_2_ssd"},{ files : ["flap.ogg"], type : "sound", name : "flap"},{ files : ["bounce.ogg"], type : "sound", name : "bounce"},{ files : ["lightning.ogg"], type : "sound", name : "lightning"},{ files : ["spawn.ogg"], type : "sound", name : "spawn"},{ files : ["upgrade.ogg"], type : "sound", name : "upgrade"},{ files : ["Montserrat-Bold.ttf"], type : "font", name : "Montserrat_Bold"},{ files : ["Montserrat_SIL Open Font License.txt"], type : "blob", name : "Montserrat_SIL_Open_Font_License_txt"},{ files : ["SpaceMono-Bold.ttf"], type : "font", name : "SpaceMono_Bold"},{ files : ["SpaceMono_SIL Open Font License.txt"], type : "blob", name : "SpaceMono_SIL_Open_Font_License_txt"},{ inputs : [{ type : "vec4", name : "fragmentColor"}], uniforms : [], files : ["painter-colored.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_colored_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-colored.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_colored_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-image.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_image_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-text.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "fragmentColor"}], type : "shader", name : "painter_text_vert"},{ inputs : [{ type : "vec4", name : "fragmentColor"},{ type : "vec2", name : "texCoord"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-text.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_text_frag"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-image.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_image_vert"},{ inputs : [{ type : "vec3", name : "vertexPosition"},{ type : "vec2", name : "texPosition"},{ type : "vec4", name : "vertexColor"}], uniforms : [{ type : "mat4", name : "projectionMatrix"}], files : ["painter-video.vert.essl"], outputs : [{ type : "vec4", name : "gl_Position"},{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], type : "shader", name : "painter_video_vert"},{ inputs : [{ type : "vec2", name : "texCoord"},{ type : "vec4", name : "color"}], uniforms : [{ type : "sampler2D", name : "tex"}], files : ["painter-video.frag.essl"], outputs : [{ type : "vec4", name : "gl_FragColor"}], type : "shader", name : "painter_video_frag"}];
 kala_audio_Audio.groups = [];
 kala_behaviors_collision_basic_shapes_CollisionRectangle.pool = new kala_util_pool_Pool(function() {
 	return new kala_behaviors_collision_basic_shapes_CollisionRectangle();
@@ -40722,9 +40628,9 @@ kha_Scheduler.startTime = 0;
 kha_Shaders.painter_colored_fragData = "s236:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4CnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0Owp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfRnJhZ0NvbG9yID0gZnJhZ21lbnRDb2xvcjsKCXJldHVybjsKfQoK";
 kha_Shaders.painter_colored_vertData = "s518:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4CnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0Owp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKYXR0cmlidXRlIHZlYzMgdmVydGV4UG9zaXRpb247CnZhcnlpbmcgdmVjNCBmcmFnbWVudENvbG9yOwphdHRyaWJ1dGUgdmVjNCB2ZXJ0ZXhDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb25bMF0sIHZlcnRleFBvc2l0aW9uWzFdLCB2ZXJ0ZXhQb3NpdGlvblsyXSwgMS4wKSk7CglmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7CglyZXR1cm47Cn0KCg";
 kha_Shaders.painter_image_fragData = "s842:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOApwcmVjaXNpb24gbWVkaXVtcCBmbG9hdDsKdW5pZm9ybSBzYW1wbGVyMkQgdGV4Owp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJdmVjNCB0ZXhjb2xvcl85OwoJdGV4Y29sb3JfOSA9ICh0ZXh0dXJlMkQodGV4LCB0ZXhDb29yZCkgKiBjb2xvcik7Cgl0ZXhjb2xvcl85ID0gdmVjNCgodmVjMyh0ZXhjb2xvcl85WzBdLCB0ZXhjb2xvcl85WzFdLCB0ZXhjb2xvcl85WzJdKSAqIGNvbG9yWzNdKVswXSwgKHZlYzModGV4Y29sb3JfOVswXSwgdGV4Y29sb3JfOVsxXSwgdGV4Y29sb3JfOVsyXSkgKiBjb2xvclszXSlbMV0sICh2ZWMzKHRleGNvbG9yXzlbMF0sIHRleGNvbG9yXzlbMV0sIHRleGNvbG9yXzlbMl0pICogY29sb3JbM10pWzJdLCB0ZXhjb2xvcl85WzNdKTsKCWdsX0ZyYWdDb2xvciA9IHRleGNvbG9yXzk7CglyZXR1cm47Cn0KCg";
-kha_Shaders.painter_image_vertData = "s628:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnVuaWZvcm0gbWF0NCBwcm9qZWN0aW9uTWF0cml4OwphdHRyaWJ1dGUgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwphdHRyaWJ1dGUgdmVjMiB0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgdmVjNCB2ZXJ0ZXhDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb25bMF0sIHZlcnRleFBvc2l0aW9uWzFdLCB2ZXJ0ZXhQb3NpdGlvblsyXSwgMS4wKSk7Cgl0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwoJY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKCXJldHVybjsKfQoK";
-kha_Shaders.painter_text_fragData = "s727:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnZhcnlpbmcgdmVjNCBmcmFnbWVudENvbG9yOwp1bmlmb3JtIHNhbXBsZXIyRCB0ZXg7CnZhcnlpbmcgdmVjMiB0ZXhDb29yZDsKCgoKdm9pZCBtYWluKCkKewoJZ2xfRnJhZ0NvbG9yID0gdmVjNCh2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzBdLCB2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzFdLCB2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzJdLCAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpWzBdICogZnJhZ21lbnRDb2xvclszXSkpOwoJcmV0dXJuOwp9Cgo";
 kha_Shaders.painter_text_vertData = "s650:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnVuaWZvcm0gbWF0NCBwcm9qZWN0aW9uTWF0cml4OwphdHRyaWJ1dGUgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwphdHRyaWJ1dGUgdmVjMiB0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWM0IGZyYWdtZW50Q29sb3I7CmF0dHJpYnV0ZSB2ZWM0IHZlcnRleENvbG9yOwoKCgp2b2lkIG1haW4oKQp7CglnbF9Qb3NpdGlvbiA9IChwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvblswXSwgdmVydGV4UG9zaXRpb25bMV0sIHZlcnRleFBvc2l0aW9uWzJdLCAxLjApKTsKCXRleENvb3JkID0gdGV4UG9zaXRpb247CglmcmFnbWVudENvbG9yID0gdmVydGV4Q29sb3I7CglyZXR1cm47Cn0KCg";
+kha_Shaders.painter_text_fragData = "s727:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnZhcnlpbmcgdmVjNCBmcmFnbWVudENvbG9yOwp1bmlmb3JtIHNhbXBsZXIyRCB0ZXg7CnZhcnlpbmcgdmVjMiB0ZXhDb29yZDsKCgoKdm9pZCBtYWluKCkKewoJZ2xfRnJhZ0NvbG9yID0gdmVjNCh2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzBdLCB2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzFdLCB2ZWMzKGZyYWdtZW50Q29sb3JbMF0sIGZyYWdtZW50Q29sb3JbMV0sIGZyYWdtZW50Q29sb3JbMl0pWzJdLCAodGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpWzBdICogZnJhZ21lbnRDb2xvclszXSkpOwoJcmV0dXJuOwp9Cgo";
+kha_Shaders.painter_image_vertData = "s628:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnVuaWZvcm0gbWF0NCBwcm9qZWN0aW9uTWF0cml4OwphdHRyaWJ1dGUgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwphdHRyaWJ1dGUgdmVjMiB0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgdmVjNCB2ZXJ0ZXhDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb25bMF0sIHZlcnRleFBvc2l0aW9uWzFdLCB2ZXJ0ZXhQb3NpdGlvblsyXSwgMS4wKSk7Cgl0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwoJY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKCXJldHVybjsKfQoK";
 kha_Shaders.painter_video_vertData = "s628:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKcHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7CnVuaWZvcm0gbWF0NCBwcm9qZWN0aW9uTWF0cml4OwphdHRyaWJ1dGUgdmVjMyB2ZXJ0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWMyIHRleENvb3JkOwphdHRyaWJ1dGUgdmVjMiB0ZXhQb3NpdGlvbjsKdmFyeWluZyB2ZWM0IGNvbG9yOwphdHRyaWJ1dGUgdmVjNCB2ZXJ0ZXhDb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJZ2xfUG9zaXRpb24gPSAocHJvamVjdGlvbk1hdHJpeCAqIHZlYzQodmVydGV4UG9zaXRpb25bMF0sIHZlcnRleFBvc2l0aW9uWzFdLCB2ZXJ0ZXhQb3NpdGlvblsyXSwgMS4wKSk7Cgl0ZXhDb29yZCA9IHRleFBvc2l0aW9uOwoJY29sb3IgPSB2ZXJ0ZXhDb2xvcjsKCXJldHVybjsKfQoK";
 kha_Shaders.painter_video_fragData = "s842:I3ZlcnNpb24gMTAwCi8vIFVua25vd24gZXhlY3V0aW9uIG1vZGUgOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOAovLyBVbmtub3duIG9wZXJhdGlvbiA4Ci8vIFVua25vd24gb3BlcmF0aW9uIDgKLy8gVW5rbm93biBvcGVyYXRpb24gOApwcmVjaXNpb24gbWVkaXVtcCBmbG9hdDsKdW5pZm9ybSBzYW1wbGVyMkQgdGV4Owp2YXJ5aW5nIHZlYzIgdGV4Q29vcmQ7CnZhcnlpbmcgdmVjNCBjb2xvcjsKCgoKdm9pZCBtYWluKCkKewoJdmVjNCB0ZXhjb2xvcl85OwoJdGV4Y29sb3JfOSA9ICh0ZXh0dXJlMkQodGV4LCB0ZXhDb29yZCkgKiBjb2xvcik7Cgl0ZXhjb2xvcl85ID0gdmVjNCgodmVjMyh0ZXhjb2xvcl85WzBdLCB0ZXhjb2xvcl85WzFdLCB0ZXhjb2xvcl85WzJdKSAqIGNvbG9yWzNdKVswXSwgKHZlYzModGV4Y29sb3JfOVswXSwgdGV4Y29sb3JfOVsxXSwgdGV4Y29sb3JfOVsyXSkgKiBjb2xvclszXSlbMV0sICh2ZWMzKHRleGNvbG9yXzlbMF0sIHRleGNvbG9yXzlbMV0sIHRleGNvbG9yXzlbMl0pICogY29sb3JbM10pWzJdLCB0ZXhjb2xvcl85WzNdKTsKCWdsX0ZyYWdDb2xvciA9IHRleGNvbG9yXzk7CglyZXR1cm47Cn0KCg";
 kha_System.renderListeners = [];
