@@ -3,16 +3,12 @@
 
 ###PLAY:
 
-Only work as intended when playing on Chrome.
-
 - FPS capped at 60: https://melon-not-found.github.io/bioDigit-Kala/cap60/
 - FPS capped at 30 (recommended for mobile devices): https://melon-not-found.github.io/bioDigit-Kala/cap30/
 
 ###KNOWN ISSUES:
 
 - Audio settings and sound effects won't work on mobile devices. Related to https://github.com/KTXSoftware/Kha/issues/299.
-- Sometime touch gets stuck.
-- Sometime left click doesn't work.
 
 ###NOTES
 
