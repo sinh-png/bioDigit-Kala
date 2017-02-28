@@ -3,8 +3,8 @@
 
 ###PLAY:
 
-- FPS capped at 60: https://melon-not-found.github.io/bioDigit-Kala/cap60/
-- FPS capped at 30 (recommended for mobile devices): https://melon-not-found.github.io/bioDigit-Kala/cap30/
+- FPS capped at 60: https://melonin.github.io/bioDigit-Kala/cap60/
+- FPS capped at 30 (recommended for mobile devices): https://melonin.io/bioDigit-Kala/cap30/
 
 ###KNOWN ISSUES:
 
